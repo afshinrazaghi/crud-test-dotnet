@@ -1,13 +1,10 @@
-namespace Mc2.CrudTest.Presentation.Shared
+﻿namespace Mc2.CrudTest.Presentation.Shared
 {
     public class WeatherForecast
     {
-        public DateOnly Date { get; set; }
-
-        public int TemperatureC { get; set; }
-
-        public string? Summary { get; set; }
-
-        public int TemperatureF => 32 + (int)(TemperatureC / 0.5556);
+        public DateTime Date { get; set; }
+        public float TemperatureC { get; set; }
+        public float TemperatureF { get; set; }
+        public string Summary { get; set; }
     }
 }
