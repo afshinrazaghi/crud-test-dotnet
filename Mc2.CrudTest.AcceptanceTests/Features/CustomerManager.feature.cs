@@ -105,32 +105,28 @@ this.ScenarioInitialize(scenarioInfo);
                 this.ScenarioStart();
                 TechTalk.SpecFlow.Table table1 = new TechTalk.SpecFlow.Table(new string[] {
                             "FirstName",
-                            "John"});
-                table1.AddRow(new string[] {
                             "LastName",
-                            "Smith"});
-                table1.AddRow(new string[] {
                             "DateOfBirth",
-                            "1990-04-13"});
-                table1.AddRow(new string[] {
                             "PhoneNumber",
-                            "123-4560-7890"});
-                table1.AddRow(new string[] {
                             "Email",
-                            "john.smith@gmail.com"});
+                            "BankAccountNumber"});
                 table1.AddRow(new string[] {
-                            "BankAccountNumber",
-                            "123456789"});
+                            "Afshin",
+                            "Razaghi",
+                            "1990-04-13",
+                            "231323456",
+                            "afshin.razaghi.net@gmail.com",
+                            "12 34 56 789"});
 #line 7
  testRunner.Given("I have a new customer with the following details", ((string)(null)), table1, "Given ");
 #line hidden
-#line 14
+#line 10
  testRunner.When("I create the customer", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 15
+#line 11
  testRunner.Then("the customer should be saved in the system", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
-#line 16
+#line 12
  testRunner.And("I should be able to retrieve the customer with the same details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
 #line hidden
             }
@@ -146,7 +142,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "update"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("update an existing customer", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 20
+#line 16
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -168,68 +164,56 @@ this.ScenarioInitialize(scenarioInfo);
                 this.ScenarioStart();
                 TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
                             "FirstName",
-                            "John"});
-                table2.AddRow(new string[] {
                             "LastName",
-                            "Smith"});
-                table2.AddRow(new string[] {
                             "DateOfBirth",
-                            "1990-04-13"});
-                table2.AddRow(new string[] {
                             "PhoneNumber",
-                            "923412345"});
-                table2.AddRow(new string[] {
                             "Email",
-                            "john.smith@gmail.com"});
+                            "BankAccountNumber"});
                 table2.AddRow(new string[] {
-                            "BankAccountNumber",
-                            "12 34 56 789"});
-#line 21
+                            "Reza",
+                            "Bahram",
+                            "1985-06-13",
+                            "556733455",
+                            "reaza.bahram.123@gmail.com",
+                            "55 33 23 154"});
+#line 17
  testRunner.Given("an existing customer with following details", ((string)(null)), table2, "Given ");
 #line hidden
                 TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
                             "FirstName",
-                            "Jane"});
-                table3.AddRow(new string[] {
                             "LastName",
-                            "Doe"});
-                table3.AddRow(new string[] {
                             "DateOfBirth",
-                            "1985-04-12"});
-                table3.AddRow(new string[] {
                             "PhoneNumber",
-                            "923412345"});
-                table3.AddRow(new string[] {
                             "Email",
-                            "jane.doe@gmail.com"});
+                            "BankAccountNumber"});
                 table3.AddRow(new string[] {
-                            "BankAccountNumber",
-                            "63 23 56 123"});
-#line 28
+                            "Hamid",
+                            "Hami",
+                            "1987-11-13",
+                            "666722445",
+                            "hamid.hami.12@gmail.com",
+                            "22 15 44 831"});
+#line 20
  testRunner.When("I update the customer\'s details with the following information", ((string)(null)), table3, "When ");
 #line hidden
-#line 35
+#line 23
  testRunner.Then("the customer\'s details should be updated successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
                 TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
                             "FirstName",
-                            "Jane"});
-                table4.AddRow(new string[] {
                             "LastName",
-                            "Doe"});
-                table4.AddRow(new string[] {
                             "DateOfBirth",
-                            "1985-04-12"});
-                table4.AddRow(new string[] {
                             "PhoneNumber",
-                            "923412345"});
-                table4.AddRow(new string[] {
                             "Email",
-                            "jane.doe@gmail.com"});
+                            "BankAccountNumber"});
                 table4.AddRow(new string[] {
-                            "BankAccountNumber",
-                            "63 23 56 123"});
-#line 36
+                            "Hamid",
+                            "Hami",
+                            "1987-11-13",
+                            "666722445",
+                            "hamid.hami.12@gmail.com",
+                            "22 15 44 831"});
+#line 24
  testRunner.And("the customer should have the following updated details", ((string)(null)), table4, "And ");
 #line hidden
             }
@@ -245,7 +229,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "delete"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("delete a customer", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 47
+#line 30
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -267,29 +251,25 @@ this.ScenarioInitialize(scenarioInfo);
                 this.ScenarioStart();
                 TechTalk.SpecFlow.Table table5 = new TechTalk.SpecFlow.Table(new string[] {
                             "FirstName",
-                            "Jane"});
-                table5.AddRow(new string[] {
                             "LastName",
-                            "Doe"});
-                table5.AddRow(new string[] {
                             "DateOfBirth",
-                            "1985-04-12"});
-                table5.AddRow(new string[] {
                             "PhoneNumber",
-                            "923412345"});
-                table5.AddRow(new string[] {
                             "Email",
-                            "jane.doe@gmail.com"});
+                            "BankAccountNumber"});
                 table5.AddRow(new string[] {
-                            "BankAccountNumber",
-                            "63 23 56 123"});
-#line 48
+                            "Reza",
+                            "Bahram",
+                            "1985-06-13",
+                            "231323456",
+                            "reaza.bahram.123@gmail.com",
+                            "55 33 23 154"});
+#line 31
  testRunner.Given("a customer with the following details", ((string)(null)), table5, "Given ");
 #line hidden
-#line 55
+#line 34
  testRunner.When("I delete the customer with target Id", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
-#line 56
+#line 35
  testRunner.Then("the customer with target Id should not exist", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
 #line hidden
             }
@@ -305,7 +285,7 @@ this.ScenarioInitialize(scenarioInfo);
                     "retrieveAllCustomers"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("successfully retrieve all customers", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
-#line 60
+#line 39
 this.ScenarioInitialize(scenarioInfo);
 #line hidden
             bool isScenarioIgnored = default(bool);
@@ -346,10 +326,10 @@ this.ScenarioInitialize(scenarioInfo);
                             "223341234",
                             "mostafa.moradi@gmail.com",
                             "23 22 45 145"});
-#line 61
+#line 40
  testRunner.Given("the following customers exists", ((string)(null)), table6, "Given ");
 #line hidden
-#line 65
+#line 44
  testRunner.When("I retrieve all customers", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
 #line hidden
                 TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
@@ -373,7 +353,7 @@ this.ScenarioInitialize(scenarioInfo);
                             "223341234",
                             "mostafa.moradi@gmail.com",
                             "23 22 45 145"});
-#line 66
+#line 45
  testRunner.Then("I should see the following customers", ((string)(null)), table7, "Then ");
 #line hidden
             }

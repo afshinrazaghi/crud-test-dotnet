@@ -1,14 +1,9 @@
 ﻿using Mc2.CrudTest.Presentation.Infrastructure.Command.Context;
 using Microsoft.Data.Sqlite;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Xunit;
 
-namespace Mc2.CrudTest.AcceptanceTests
+namespace Mc2.CrudTest.AcceptanceTests.Fixtures
 {
     public class EfSQLiteFixture : IAsyncLifetime, IDisposable
     {
@@ -50,7 +45,7 @@ namespace Mc2.CrudTest.AcceptanceTests
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposed)
+            if (_disposed)
                 return;
 
             if (disposing)

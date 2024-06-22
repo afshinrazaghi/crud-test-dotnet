@@ -24,11 +24,13 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.CommonModels;
+using Xunit;
+using System.Linq;
 
 namespace Mc2.CrudTest.AcceptanceTests
 {
     [Binding]
-    public class CustomerManagerStepDefinitions
+    public class CustomerManagerStepDefinitions : IClassFixture<EfSQLiteFixture>
     {
         private readonly ScenarioContext _scenarioContext;
         private readonly EfSQLiteFixture _fixture;
@@ -53,6 +55,7 @@ namespace Mc2.CrudTest.AcceptanceTests
         {
             _scenarioContext = scenarioContext;
             _fixture = fixture;
+            _fixture.InitializeAsync().Wait();
             _mongoFixture = mongoFixture;
         }
 
@@ -220,7 +223,7 @@ namespace Mc2.CrudTest.AcceptanceTests
             );
 
             var customerWriteOnlyRepository = new CustomerWriteOnlyRepository(_fixture.Context);
-            customerWriteOnlyRepository.Add(_existingCustomer);
+            customerWriteOnlyRepository.Add(_targetDeleteCustomer);
             await _fixture.Context.SaveChangesAsync();
             _fixture.Context.ChangeTracker.Clear();
         }
@@ -263,7 +266,7 @@ namespace Mc2.CrudTest.AcceptanceTests
 
         #region Get All Customers
         [Given(@"the following customers exists")]
-        public async void GivenTheFollowingCustomersExists(Table table)
+        public async Task GivenTheFollowingCustomersExists(Table table)
         {
             var repository = new CustomerWriteOnlyRepository(_fixture.Context);
             var unitOfWork = new UnitOfWork(
@@ -287,11 +290,12 @@ namespace Mc2.CrudTest.AcceptanceTests
                 ).Value;
 
                 customers.Add(customer);
-                repository.Add(customer);
             }
 
             await _fixture.Context.SaveChangesAsync();
             _fixture.Context.ChangeTracker.Clear();
+
+            List<Task> tasks = new List<Task>();
 
             foreach (var customer in customers)
             {
@@ -306,8 +310,10 @@ namespace Mc2.CrudTest.AcceptanceTests
                     PhoneNumber = customer.PhoneNumber.Value
                 };
 
-                await _mongoFixture.Context.UpsertAsync(model, filter => filter.Id == model.Id);
+                tasks.Add(_mongoFixture.Context.UpsertAsync(model, filter => filter.Id == model.Id));
             }
+
+            await Task.WhenAll(tasks);
         }
 
         [When(@"I retrieve all customers")]

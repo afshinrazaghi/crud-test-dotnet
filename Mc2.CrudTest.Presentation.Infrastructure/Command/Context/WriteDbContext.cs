@@ -16,11 +16,12 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Command.Context
         {
         }
 
-        public DbSet<Customer> Customers { get; set; }
+        public DbSet<Customer> Customers => Set<Customer>();
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Customer>().ToTable("Customers");
             modelBuilder.ApplyConfiguration(new CustomerConfiguration());
         }
     }

@@ -49,7 +49,7 @@ namespace Mc2.CrudTest.UnitTests.Fixtures
 
         protected virtual void Dispose(bool disposing)
         {
-            if (!_disposed)
+            if (_disposed)
                 return;
 
             if (disposing)
