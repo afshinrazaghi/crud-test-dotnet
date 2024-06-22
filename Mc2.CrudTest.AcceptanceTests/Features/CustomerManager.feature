@@ -40,3 +40,17 @@ Scenario: update an existing customer
 		| PhoneNumber       | 923412345          |
 		| Email             | jane.doe@gmail.com |
 		| BankAccountNumber | 63 23 56 123       |
+
+
+
+@delete
+Scenario: delete a customer
+	Given a customer with the following details
+		| FirstName         | Jane               |
+		| LastName          | Doe                |
+		| DateOfBirth       | 1985-04-12         |
+		| PhoneNumber       | 923412345          |
+		| Email             | jane.doe@gmail.com |
+		| BankAccountNumber | 63 23 56 123       |
+	When I delete the customer with target Id
+	Then the customer with target Id should not exist

@@ -15,7 +15,7 @@ namespace Mc2.CrudTest.Presentation.Shared.SharedKernel.Command
 
         void Update(TEntity entity);
         void Remove(TEntity entity);
-        Task<TEntity> GetByIdAsync(TKey id);
+        Task<TEntity?> GetByIdAsync(TKey id);
         Task<IEnumerable<TEntity>> GetAllAsync();
     }
 }

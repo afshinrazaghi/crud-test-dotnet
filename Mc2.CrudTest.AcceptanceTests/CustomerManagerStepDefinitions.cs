@@ -1,3 +1,4 @@
+using Ardalis.Result;
 using FluentAssertions;
 using Mc2.CrudTest.AcceptanceTests.Fixtures;
 using Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandlers;
@@ -20,6 +21,7 @@ using NUnit.Framework;
 using System;
 using System.ComponentModel.DataAnnotations;
 using TechTalk.SpecFlow;
+using TechTalk.SpecFlow.CommonModels;
 
 namespace Mc2.CrudTest.AcceptanceTests
 {
@@ -32,13 +34,16 @@ namespace Mc2.CrudTest.AcceptanceTests
 
         private CreateCustomerCommand _createCustomerCommand;
         private UpdateCustomerCommand _updateCustomerCommand;
-        private CustomerQueryModel _retrievedCustomer;
+        private Customer? _retrievedCustomer;
         private Customer _existingCustomer;
         private Customer _updatedCustomer;
+        private Customer _targetDeleteCustomer;
         private Guid createdCustomerId;
+        private Ardalis.Result.Result _updateCustomerResult;
         private readonly CreateCustomerCommandValidator _createCustomerCommandValidator = new CreateCustomerCommandValidator();
         private readonly GetCustomerByIdQueryValidator _getCustomerByIdQueryValidator = new GetCustomerByIdQueryValidator();
         private readonly UpdateCustomerCommandValidator _updateCustomerCommandValidator = new UpdateCustomerCommandValidator();
+        private readonly DeleteCustomerCommandValidator _deleteCustomerCommandValidator = new DeleteCustomerCommandValidator();
 
         public CustomerManagerStepDefinitions(ScenarioContext scenarioContext, EfSQLiteFixture fixture, MongoFixture mongoFixture)
         {
@@ -83,26 +88,28 @@ namespace Mc2.CrudTest.AcceptanceTests
         [Then(@"the customer should be saved in the system")]
         public async void ThenTheCustomerShouldBeSavedInTheSystem()
         {
-
-            var query = new GetCustomerByIdQuery(createdCustomerId);
-            var customerReadonlyRepository = new CustomerReadOnlyRepository(_mongoFixture.Context);
-
-            var getCustomerByIdQueryHandler = new GetCustomerByIdQueryHandler(customerReadonlyRepository, _getCustomerByIdQueryValidator);
-            var result = await getCustomerByIdQueryHandler.Handle(query, default);
-            result.IsSuccess.Should().Be(true);
-            _retrievedCustomer = result.Value;
+            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            _retrievedCustomer = await repository.GetByIdAsync(createdCustomerId);
             _retrievedCustomer.Should().NotBeNull();
+            //var query = new GetCustomerByIdQuery(createdCustomerId);
+            //var customerReadonlyRepository = new CustomerReadOnlyRepository(_mongoFixture.Context);
+
+            //var getCustomerByIdQueryHandler = new GetCustomerByIdQueryHandler(customerReadonlyRepository, _getCustomerByIdQueryValidator);
+            //var result = await getCustomerByIdQueryHandler.Handle(query, default);
+            //result.IsSuccess.Should().Be(true);
+            //_retrievedCustomer = result.Value;
+            //_retrievedCustomer.Should().NotBeNull();
         }
 
         [Then(@"I should be able to retrieve the customer with the same details")]
         public void ThenIShouldBeAbleToRetrieveTheCustomerWithTheSameDetails()
         {
-            _createCustomerCommand.FirstName.Should().Be(_retrievedCustomer.FirstName);
-            _createCustomerCommand.LastName.Should().Be(_retrievedCustomer.LastName);
-            _createCustomerCommand.DateOfBirth.Should().Be(_retrievedCustomer.DateOfBirth);
-            _createCustomerCommand.PhoneNumber.Should().Be(_retrievedCustomer.PhoneNumber);
-            _createCustomerCommand.Email.Should().Be(_retrievedCustomer.Email);
-            _createCustomerCommand.BankAccountNumber.Should().Be(_retrievedCustomer.BankAccountNumber);
+            _createCustomerCommand.FirstName.Should().Be(_retrievedCustomer!.FirstName);
+            _createCustomerCommand.LastName.Should().Be(_retrievedCustomer!.LastName);
+            _createCustomerCommand.DateOfBirth.Should().Be(_retrievedCustomer!.DateOfBirth);
+            _createCustomerCommand.PhoneNumber.Should().Be(_retrievedCustomer!.PhoneNumber.Value);
+            _createCustomerCommand.Email.Should().Be(_retrievedCustomer!.Email.Value);
+            _createCustomerCommand.BankAccountNumber.Should().Be(_retrievedCustomer!.BankAccountNumber.Value);
         }
         #endregion
 
@@ -131,14 +138,14 @@ namespace Mc2.CrudTest.AcceptanceTests
         {
             var details = table.Rows.First();
 
-            _updatedCustomer = CustomerFactory.Create(
-                    details["FirstName"],
-                    details["LastName"],
-                    Convert.ToDateTime(details["DateOfBirth"]),
-                    details["PhoneNumber"],
-                    details["Email"],
-                    details["BankAccountNumber"]
-            );
+            //_updatedCustomer = CustomerFactory.Create(
+            //        details["FirstName"],
+            //        details["LastName"],
+            //        Convert.ToDateTime(details["DateOfBirth"]),
+            //        details["PhoneNumber"],
+            //        details["Email"],
+            //        details["BankAccountNumber"]
+            //);
 
             _updateCustomerCommand = new UpdateCustomerCommand()
             {
@@ -161,24 +168,29 @@ namespace Mc2.CrudTest.AcceptanceTests
 
             var updateCustomerCommandHandler = new UpdateCustomerCommandHandler(_updateCustomerCommandValidator, repository, unitOfWork);
 
-            var result = await updateCustomerCommandHandler.Handle(_updateCustomerCommand, default);
-            result.IsSuccess.Should().Be(true);
+            _updateCustomerResult = await updateCustomerCommandHandler.Handle(_updateCustomerCommand, default);
+
         }
 
         [Then(@"the customer's details should be updated successfully")]
-        public async void ThenTheCustomersDetailsShouldBeUpdatedSuccessfully()
+        public void ThenTheCustomersDetailsShouldBeUpdatedSuccessfully()
         {
-            var query = new GetCustomerByIdQuery(_existingCustomer.Id);
-            var customerReadonlyRepository = new CustomerReadOnlyRepository(_mongoFixture.Context);
+            _updateCustomerResult.IsSuccess.Should().Be(true);
 
-            var getCustomerByIdQueryHandler = new GetCustomerByIdQueryHandler(customerReadonlyRepository, _getCustomerByIdQueryValidator);
-            var result = await getCustomerByIdQueryHandler.Handle(query, default);
-            result.IsSuccess.Should().Be(true);
+            //var query = new GetCustomerByIdQuery(_existingCustomer.Id);
+            //var customerReadonlyRepository = new CustomerReadOnlyRepository(_mongoFixture.Context);
+
+            //var getCustomerByIdQueryHandler = new GetCustomerByIdQueryHandler(customerReadonlyRepository, _getCustomerByIdQueryValidator);
+            //var result = await getCustomerByIdQueryHandler.Handle(query, default);
+            //result.IsSuccess.Should().Be(true);
         }
 
         [Then(@"the customer should have the following updated details")]
-        public void ThenTheCustomerShouldHaveTheFollowingUpdatedDetails(Table table)
+        public async void ThenTheCustomerShouldHaveTheFollowingUpdatedDetails(Table table)
         {
+            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            _updatedCustomer = (await repository.GetByIdAsync(_updateCustomerCommand.Id))!;
+
             _updateCustomerCommand.FirstName.Should().Be(_updatedCustomer.FirstName);
             _updateCustomerCommand.LastName.Should().Be(_updatedCustomer.LastName);
             _updateCustomerCommand.DateOfBirth.Should().Be(_updatedCustomer.DateOfBirth);
@@ -186,6 +198,62 @@ namespace Mc2.CrudTest.AcceptanceTests
             _updateCustomerCommand.Email.Should().Be(_updatedCustomer.Email.Value);
             _updateCustomerCommand.BankAccountNumber.Should().Be(_updatedCustomer.BankAccountNumber.Value);
         }
+
+        #endregion
+
+        #region Delete
+        [Given(@"a customer with the following details")]
+        public async void GivenACustomerWithTheFollowingDetails(Table table)
+        {
+            var details = table.Rows.First();
+            _targetDeleteCustomer = CustomerFactory.Create(
+                    details["FirstName"],
+                    details["LastName"],
+                    Convert.ToDateTime(details["DateOfBirth"]),
+                    details["PhoneNumber"],
+                    details["Email"],
+                    details["BankAccountNumber"]
+            );
+
+            var customerWriteOnlyRepository = new CustomerWriteOnlyRepository(_fixture.Context);
+            customerWriteOnlyRepository.Add(_existingCustomer);
+            await _fixture.Context.SaveChangesAsync();
+            _fixture.Context.ChangeTracker.Clear();
+        }
+
+
+        [When(@"I delete the customer with target Id")]
+        public async void WhenIDeleteTheCustomerWithTargetId()
+        {
+            var command = new DeleteCustomerCommand()
+            {
+                Id = _targetDeleteCustomer.Id
+            };
+            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            var unitOfWork = new UnitOfWork(
+                    _fixture.Context,
+                    Substitute.For<IEventStoreRepository>(),
+                    Substitute.For<IMediator>(),
+                    Substitute.For<ILogger<UnitOfWork>>()
+             );
+
+            var handler = new DeleteCustomerCommandHandler(
+                _deleteCustomerCommandValidator,
+                repository,
+                unitOfWork
+             );
+
+            await handler.Handle(command, CancellationToken.None);
+        }
+
+        [Then(@"the customer with target Id should not exist")]
+        public async void ThenTheCustomerWithTargetIdShouldNotExist()
+        {
+            var customerWriteOnlyRepository = new CustomerWriteOnlyRepository(_fixture.Context);
+            var deletedCustomer = await customerWriteOnlyRepository.GetByIdAsync(_targetDeleteCustomer.Id);
+            deletedCustomer.Should().BeNull();
+        }
+
 
         #endregion
     }

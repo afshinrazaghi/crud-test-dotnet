@@ -11,6 +11,12 @@ namespace Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate
 {
     public partial class Customer : BaseEntity, IAggregateRoot
     {
+        private bool _idDeleted;
+
+        public Customer()
+        {
+
+        }
         public Customer(string firstName, string lastName, DateTime dateOfBirth, PhoneNumber phoneNumber, Email email, BankAccountNumber bankAccountNumber)
         {
             FirstName = firstName;
@@ -37,10 +43,16 @@ namespace Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate
 
             AddDomainEvent(new CustomerUpdatedEvent(Id, firstName, lastName, dateOfBirth, phoneNumber.Value, email.Value, bankAccountNumber.Value));
         }
-        public Customer()
-        {
 
+        public void Delete()
+        {
+            if (_idDeleted)
+                return;
+
+            _idDeleted = true;
+            AddDomainEvent(new CustomerDeletedEvent(Id, FirstName, LastName, DateOfBirth, PhoneNumber.Value, Email.Value, BankAccountNumber.Value));
         }
+        
         public string FirstName { get; private set; }
         public string LastName { get; private set; }
         public DateTime DateOfBirth { get; private set; }

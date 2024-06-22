@@ -30,7 +30,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Command.Persistence.Common
         public async Task<IEnumerable<TEntity>> GetAllAsync()
         => await _dbSet.AsNoTrackingWithIdentityResolution().ToListAsync();
 
-        public async Task<TEntity> GetByIdAsync(TKey id)
+        public async Task<TEntity?> GetByIdAsync(TKey id)
         => await _dbSet.AsNoTrackingWithIdentityResolution().FirstOrDefaultAsync(entity => entity.Id.Equals(id));
 
         public void Remove(TEntity entity)
