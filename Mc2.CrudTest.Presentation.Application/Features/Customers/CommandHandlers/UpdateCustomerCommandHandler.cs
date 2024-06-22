@@ -54,7 +54,7 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandle
                 return Result.Error("email already exists");
 
             if (await _repository.ExistsAsync(request.FirstName, request.LastName, request.DateOfBirth, customer.Id))
-                return Result.Error("customer with inserted info already exists");
+                return Result.Error("customer with target info already exists");
 
             customer.ChangeDetail(request.FirstName, request.LastName, request.DateOfBirth, phoneNumberResult.Value, emailResult.Value, bankAccountNumberResult.Value);
 
