@@ -28,6 +28,7 @@ namespace Mc2.CrudTest.AcceptanceTests
             _getCustomerByIdQueryHandler = getCustomerQueryHandler;
         }
 
+        #region Create
         [Given(@"I have a new customer with the following details")]
         public void GivenIHaveANewCustomerWithTheFollowingDetails(Table table)
         {
@@ -71,5 +72,33 @@ namespace Mc2.CrudTest.AcceptanceTests
             _createCustomerCommand.Email.Should().Be(_retrievedCustomer.Email);
             _createCustomerCommand.BankAccountNumber.Should().Be(_retrievedCustomer.BankAccountNumber);
         }
+        #endregion
+
+        #region Update
+        [Given(@"an existing customer with following details")]
+        public void GivenAnExistingCustomerWithFollowingDetails(Table table)
+        {
+            throw new PendingStepException();
+        }
+
+        [When(@"I update the customer's details with the following information")]
+        public void WhenIUpdateTheCustomersDetailsWithTheFollowingInformation(Table table)
+        {
+            throw new PendingStepException();
+        }
+
+        [Then(@"the customer's details should be updated successfully")]
+        public void ThenTheCustomersDetailsShouldBeUpdatedSuccessfully()
+        {
+            throw new PendingStepException();
+        }
+
+        [Then(@"the customer should have the following updated details")]
+        public void ThenTheCustomerShouldHaveTheFollowingUpdatedDetails(Table table)
+        {
+            throw new PendingStepException();
+        }
+
+        #endregion
     }
 }
