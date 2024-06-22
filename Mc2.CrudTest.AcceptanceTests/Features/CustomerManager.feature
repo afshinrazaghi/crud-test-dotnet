@@ -54,3 +54,17 @@ Scenario: delete a customer
 		| BankAccountNumber | 63 23 56 123       |
 	When I delete the customer with target Id
 	Then the customer with target Id should not exist
+
+
+@retrieveAllCustomers
+Scenario: successfully retrieve all customers
+	Given the following customers exists
+		| FirstName | LastName | DateOfBirth | PhoneNumber | Email                        | BankAccountNumber |
+		| Afshn     | Razaghi  | 1990-04-13  | 889732341   | afshin.razaghi.net@gmail.com | 32 33 25 123      |
+		| Mostafa   | Moradi   | 1889-02-03  | 223341234   | mostafa.moradi@gmail.com     | 23 22 45 145      |
+	When I retrieve all customers
+	Then I should see the following customers
+		| FirstName | LastName | DateOfBirth | PhoneNumber | Email                        | BankAccountNumber |
+		| Afshn     | Razaghi  | 1990-04-13  | 889732341   | afshin.razaghi.net@gmail.com | 32 33 25 123      |
+		| Mostafa   | Moradi   | 1889-02-03  | 223341234   | mostafa.moradi@gmail.com     | 23 22 45 145      |
+

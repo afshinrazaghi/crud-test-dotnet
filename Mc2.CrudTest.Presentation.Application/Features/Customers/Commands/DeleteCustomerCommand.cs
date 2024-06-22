@@ -10,6 +10,14 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.Commands
 {
     public class DeleteCustomerCommand : IRequest<Result>
     {
+        public DeleteCustomerCommand()
+        {
+
+        }
+        public DeleteCustomerCommand(Guid id)
+        {
+            Id = id;
+        }
         public Guid Id { get; set; }
     }
 }

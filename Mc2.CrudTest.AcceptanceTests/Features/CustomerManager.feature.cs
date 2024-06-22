@@ -295,6 +295,90 @@ this.ScenarioInitialize(scenarioInfo);
             }
             this.ScenarioCleanup();
         }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("successfully retrieve all customers")]
+        [NUnit.Framework.CategoryAttribute("retrieveAllCustomers")]
+        public virtual void SuccessfullyRetrieveAllCustomers()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "retrieveAllCustomers"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("successfully retrieve all customers", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 60
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table6 = new TechTalk.SpecFlow.Table(new string[] {
+                            "FirstName",
+                            "LastName",
+                            "DateOfBirth",
+                            "PhoneNumber",
+                            "Email",
+                            "BankAccountNumber"});
+                table6.AddRow(new string[] {
+                            "Afshn",
+                            "Razaghi",
+                            "1990-04-13",
+                            "889732341",
+                            "afshin.razaghi.net@gmail.com",
+                            "32 33 25 123"});
+                table6.AddRow(new string[] {
+                            "Mostafa",
+                            "Moradi",
+                            "1889-02-03",
+                            "223341234",
+                            "mostafa.moradi@gmail.com",
+                            "23 22 45 145"});
+#line 61
+ testRunner.Given("the following customers exists", ((string)(null)), table6, "Given ");
+#line hidden
+#line 65
+ testRunner.When("I retrieve all customers", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "When ");
+#line hidden
+                TechTalk.SpecFlow.Table table7 = new TechTalk.SpecFlow.Table(new string[] {
+                            "FirstName",
+                            "LastName",
+                            "DateOfBirth",
+                            "PhoneNumber",
+                            "Email",
+                            "BankAccountNumber"});
+                table7.AddRow(new string[] {
+                            "Afshn",
+                            "Razaghi",
+                            "1990-04-13",
+                            "889732341",
+                            "afshin.razaghi.net@gmail.com",
+                            "32 33 25 123"});
+                table7.AddRow(new string[] {
+                            "Mostafa",
+                            "Moradi",
+                            "1889-02-03",
+                            "223341234",
+                            "mostafa.moradi@gmail.com",
+                            "23 22 45 145"});
+#line 66
+ testRunner.Then("I should see the following customers", ((string)(null)), table7, "Then ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
     }
 }
 #pragma warning restore

@@ -11,6 +11,7 @@ using Mc2.CrudTest.Presentation.Domain.Factories;
 using Mc2.CrudTest.Presentation.Domain.ValueObjects;
 using Mc2.CrudTest.Presentation.Infrastructure.Command;
 using Mc2.CrudTest.Presentation.Infrastructure.Command.Persistence;
+using Mc2.CrudTest.Presentation.Infrastructure.EventHandlers;
 using Mc2.CrudTest.Presentation.Infrastructure.Query.Context;
 using Mc2.CrudTest.Presentation.Infrastructure.Query.Persistence;
 using Mc2.CrudTest.Presentation.Shared.SharedKernel.Command;
@@ -19,6 +20,7 @@ using Microsoft.Extensions.Logging;
 using NSubstitute;
 using NUnit.Framework;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using TechTalk.SpecFlow;
 using TechTalk.SpecFlow.CommonModels;
@@ -44,6 +46,8 @@ namespace Mc2.CrudTest.AcceptanceTests
         private readonly GetCustomerByIdQueryValidator _getCustomerByIdQueryValidator = new GetCustomerByIdQueryValidator();
         private readonly UpdateCustomerCommandValidator _updateCustomerCommandValidator = new UpdateCustomerCommandValidator();
         private readonly DeleteCustomerCommandValidator _deleteCustomerCommandValidator = new DeleteCustomerCommandValidator();
+        Ardalis.Result.Result<IEnumerable<CustomerQueryModel>> getAllCustomersResult;
+
 
         public CustomerManagerStepDefinitions(ScenarioContext scenarioContext, EfSQLiteFixture fixture, MongoFixture mongoFixture)
         {
@@ -254,6 +258,74 @@ namespace Mc2.CrudTest.AcceptanceTests
             deletedCustomer.Should().BeNull();
         }
 
+
+        #endregion
+
+        #region Get All Customers
+        [Given(@"the following customers exists")]
+        public async void GivenTheFollowingCustomersExists(Table table)
+        {
+            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            var unitOfWork = new UnitOfWork(
+                _fixture.Context,
+                Substitute.For<IEventStoreRepository>(),
+                Substitute.For<IMediator>(),
+                Substitute.For<ILogger<UnitOfWork>>()
+            );
+
+
+            List<Customer> customers = new List<Customer>();
+            foreach (var row in table.Rows)
+            {
+                var customer = CustomerFactory.Create(
+                    row["FirstName"],
+                    row["LastName"],
+                    Convert.ToDateTime(row["DateOfBirth"]),
+                    row["PhoneNumber"],
+                    row["Email"],
+                    row["BankAccountNumber"]
+                ).Value;
+
+                customers.Add(customer);
+                repository.Add(customer);
+            }
+
+            await _fixture.Context.SaveChangesAsync();
+            _fixture.Context.ChangeTracker.Clear();
+
+            foreach (var customer in customers)
+            {
+                CustomerQueryModel model = new CustomerQueryModel()
+                {
+                    FirstName = customer.FirstName,
+                    LastName = customer.LastName,
+                    Id = customer.Id,
+                    BankAccountNumber = customer.BankAccountNumber.Value,
+                    Email = customer.Email.Value,
+                    DateOfBirth = customer.DateOfBirth,
+                    PhoneNumber = customer.PhoneNumber.Value
+                };
+
+                await _mongoFixture.Context.UpsertAsync(model, filter => filter.Id == model.Id);
+            }
+        }
+
+        [When(@"I retrieve all customers")]
+        public async void WhenIRetrieveAllCustomers()
+        {
+            var getAllCustomerQuery = new GetAllCustomerQuery();
+            var repository = new CustomerReadOnlyRepository(_mongoFixture.Context);
+            var handler = new GetAllCustomerQueryHandler(repository);
+            getAllCustomersResult = await handler.Handle(getAllCustomerQuery, CancellationToken.None);
+
+        }
+
+        [Then(@"I should see the following customers")]
+        public void ThenIShouldSeeTheFollowingCustomers(Table table)
+        {
+            getAllCustomersResult.Should().NotBeNull();
+            getAllCustomersResult.Value.Should().NotBeNull().And.HaveCount(2);
+        }
 
         #endregion
     }
