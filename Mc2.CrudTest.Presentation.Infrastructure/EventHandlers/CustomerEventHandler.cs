@@ -13,7 +13,7 @@ using System.Threading.Tasks;
 
 namespace Mc2.CrudTest.Presentation.Infrastructure.EventHandlers
 {
-    public class CustomerEventHandler : INotificationHandler<CustomerCreatedEvent>
+    public class CustomerEventHandler : INotificationHandler<CustomerCreatedEvent>, INotificationHandler<CustomerUpdatedEvent>
     {
         private readonly IMapper _mapper;
         private readonly ISynchronizeDb _synchronizeDb;
@@ -34,6 +34,13 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.EventHandlers
             await _synchronizeDb.UpsertAsync(customerQueryModel, filter => filter.Id == customerQueryModel.Id);
         }
 
+        public async Task Handle(CustomerUpdatedEvent notification, CancellationToken cancellationToken)
+        {
+            LogEvent(notification);
+
+            var customerQueryModel = _mapper.Map<CustomerQueryModel>(notification);
+            await _synchronizeDb.UpsertAsync(customerQueryModel, filter => filter.Id == customerQueryModel.Id);
+        }
 
         private void LogEvent<TEvent>(TEvent @event) where TEvent : CustomerBaseEvent =>
             _logger.LogInformation("----- Triggering the event {EventName}, model: {EventModel}", typeof(TEvent).Name, @event.ToJson());

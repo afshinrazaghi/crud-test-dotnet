@@ -76,11 +76,11 @@ namespace Mc2.CrudTest.AcceptanceTests.Features
         
         [NUnit.Framework.TestAttribute()]
         [NUnit.Framework.DescriptionAttribute("create a new customer")]
-        [NUnit.Framework.CategoryAttribute("mytag")]
+        [NUnit.Framework.CategoryAttribute("create")]
         public virtual void CreateANewCustomer()
         {
             string[] tagsOfScenario = new string[] {
-                    "mytag"};
+                    "create"};
             System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
             TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("create a new customer", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
 #line 6
@@ -132,6 +132,105 @@ this.ScenarioInitialize(scenarioInfo);
 #line hidden
 #line 16
  testRunner.And("I should be able to retrieve the customer with the same details", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "And ");
+#line hidden
+            }
+            this.ScenarioCleanup();
+        }
+        
+        [NUnit.Framework.TestAttribute()]
+        [NUnit.Framework.DescriptionAttribute("update an existing customer")]
+        [NUnit.Framework.CategoryAttribute("update")]
+        public virtual void UpdateAnExistingCustomer()
+        {
+            string[] tagsOfScenario = new string[] {
+                    "update"};
+            System.Collections.Specialized.OrderedDictionary argumentsOfScenario = new System.Collections.Specialized.OrderedDictionary();
+            TechTalk.SpecFlow.ScenarioInfo scenarioInfo = new TechTalk.SpecFlow.ScenarioInfo("update an existing customer", null, tagsOfScenario, argumentsOfScenario, this._featureTags);
+#line 20
+this.ScenarioInitialize(scenarioInfo);
+#line hidden
+            bool isScenarioIgnored = default(bool);
+            bool isFeatureIgnored = default(bool);
+            if ((tagsOfScenario != null))
+            {
+                isScenarioIgnored = tagsOfScenario.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((this._featureTags != null))
+            {
+                isFeatureIgnored = this._featureTags.Where(__entry => __entry != null).Where(__entry => String.Equals(__entry, "ignore", StringComparison.CurrentCultureIgnoreCase)).Any();
+            }
+            if ((isScenarioIgnored || isFeatureIgnored))
+            {
+                testRunner.SkipScenario();
+            }
+            else
+            {
+                this.ScenarioStart();
+                TechTalk.SpecFlow.Table table2 = new TechTalk.SpecFlow.Table(new string[] {
+                            "FirstName",
+                            "John"});
+                table2.AddRow(new string[] {
+                            "LastName",
+                            "Smith"});
+                table2.AddRow(new string[] {
+                            "DateOfBirth",
+                            "1990-04-13"});
+                table2.AddRow(new string[] {
+                            "PhoneNumber",
+                            "923412345"});
+                table2.AddRow(new string[] {
+                            "Email",
+                            "john.smith@gmail.com"});
+                table2.AddRow(new string[] {
+                            "BankAccountNumber",
+                            "12 34 56 789"});
+#line 21
+ testRunner.Given("an existing customer with following details", ((string)(null)), table2, "Given ");
+#line hidden
+                TechTalk.SpecFlow.Table table3 = new TechTalk.SpecFlow.Table(new string[] {
+                            "FirstName",
+                            "Jane"});
+                table3.AddRow(new string[] {
+                            "LastName",
+                            "Doe"});
+                table3.AddRow(new string[] {
+                            "DateOfBirth",
+                            "1985-04-12"});
+                table3.AddRow(new string[] {
+                            "PhoneNumber",
+                            "923412345"});
+                table3.AddRow(new string[] {
+                            "Email",
+                            "jane.doe@gmail.com"});
+                table3.AddRow(new string[] {
+                            "BankAccountNumber",
+                            "63 23 56 123"});
+#line 28
+ testRunner.When("I update the customer\'s details with the following information", ((string)(null)), table3, "When ");
+#line hidden
+#line 35
+ testRunner.Then("the customer\'s details should be updated successfully", ((string)(null)), ((TechTalk.SpecFlow.Table)(null)), "Then ");
+#line hidden
+                TechTalk.SpecFlow.Table table4 = new TechTalk.SpecFlow.Table(new string[] {
+                            "FirstName",
+                            "Jane"});
+                table4.AddRow(new string[] {
+                            "LastName",
+                            "Doe"});
+                table4.AddRow(new string[] {
+                            "DateOfBirth",
+                            "1985-04-12"});
+                table4.AddRow(new string[] {
+                            "PhoneNumber",
+                            "923412345"});
+                table4.AddRow(new string[] {
+                            "Email",
+                            "jane.doe@gmail.com"});
+                table4.AddRow(new string[] {
+                            "BankAccountNumber",
+                            "63 23 56 123"});
+#line 36
+ testRunner.And("the customer should have the following updated details", ((string)(null)), table4, "And ");
 #line hidden
             }
             this.ScenarioCleanup();

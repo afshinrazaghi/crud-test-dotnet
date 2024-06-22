@@ -22,9 +22,24 @@ namespace Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate
 
             AddDomainEvent(new CustomerCreatedEvent(Id, firstName, lastName, DateOfBirth, phoneNumber.Value, email.Value, bankAccountNumber.Value));
         }
+
+        public void ChangeDetail(string firstName, string lastName, DateTime dateOfBirth, PhoneNumber phoneNumber, Email email, BankAccountNumber bankAccountNumber)
+        {
+            if (firstName.Equals(FirstName) && lastName.Equals(LastName) && dateOfBirth.Equals(DateOfBirth) && phoneNumber.Equals(PhoneNumber) && email.Equals(Email) && bankAccountNumber.Equals(BankAccountNumber))
+                return;
+
+            FirstName = firstName;
+            LastName = lastName;
+            DateOfBirth = dateOfBirth;
+            PhoneNumber = phoneNumber;
+            Email = email;
+            BankAccountNumber = bankAccountNumber;
+
+            AddDomainEvent(new CustomerUpdatedEvent(Id, firstName, lastName, dateOfBirth, phoneNumber.Value, email.Value, bankAccountNumber.Value));
+        }
         public Customer()
         {
-            
+
         }
         public string FirstName { get; private set; }
         public string LastName { get; private set; }

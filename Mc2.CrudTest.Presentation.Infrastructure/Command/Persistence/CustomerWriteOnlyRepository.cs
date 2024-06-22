@@ -21,10 +21,15 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Command.Persistence
         => Context.Customers
             .AnyAsync(customer => customer.FirstName == firstName && customer.LastName == lastName && customer.DateOfBirth == dateOfBirth);
 
+        public Task<bool> ExistsAsync(string firstName, string lastName, DateTime dateOfBirth, Guid currentId)
+            => Context.Customers.AnyAsync(customer => customer.FirstName == firstName && customer.LastName == lastName && customer.DateOfBirth == dateOfBirth && customer.Id != currentId);
+
         public Task<bool> ExistsByEmailAsync(Email email)
         => Context.Customers.AnyAsync(customer => customer.Email.Value == email.Value);
 
         public Task<bool> ExistsByEmailAsync(Email email, Guid currentId)
-      => Context.Customers.AnyAsync(customer => customer.Email.Value == email.Value && customer.Id != currentId);
+            => Context.Customers.AnyAsync(customer => customer.Email.Value == email.Value && customer.Id != currentId);
+
+
     }
 }
