@@ -30,10 +30,10 @@ using System.Linq;
 namespace Mc2.CrudTest.AcceptanceTests
 {
     [Binding]
-    public class CustomerManagerStepDefinitions : IClassFixture<EfSQLiteFixture>
+    public class CustomerManagerStepDefinitions : IClassFixture<EFSQLFixture>
     {
         private readonly ScenarioContext _scenarioContext;
-        private readonly EfSQLiteFixture _fixture;
+        private readonly EFSQLFixture _fixture;
         private readonly MongoFixture _mongoFixture;
 
         private CreateCustomerCommand _createCustomerCommand;
@@ -51,7 +51,7 @@ namespace Mc2.CrudTest.AcceptanceTests
         Ardalis.Result.Result<IEnumerable<CustomerQueryModel>> getAllCustomersResult;
 
 
-        public CustomerManagerStepDefinitions(ScenarioContext scenarioContext, EfSQLiteFixture fixture, MongoFixture mongoFixture)
+        public CustomerManagerStepDefinitions(ScenarioContext scenarioContext, EFSQLFixture fixture, MongoFixture mongoFixture)
         {
             _scenarioContext = scenarioContext;
             _fixture = fixture;
@@ -156,7 +156,6 @@ namespace Mc2.CrudTest.AcceptanceTests
 
             _updateCustomerCommand = new UpdateCustomerCommand()
             {
-                Id = _existingCustomer.Id,
                 FirstName = details["FirstName"],
                 LastName = details["LastName"],
                 DateOfBirth = DateTime.Parse(details["DateOfBirth"]),
@@ -196,7 +195,7 @@ namespace Mc2.CrudTest.AcceptanceTests
         public async void ThenTheCustomerShouldHaveTheFollowingUpdatedDetails(Table table)
         {
             var repository = new CustomerWriteOnlyRepository(_fixture.Context);
-            _updatedCustomer = (await repository.GetByIdAsync(_updateCustomerCommand.Id))!;
+            _updatedCustomer = (await repository.GetByEmailAsync(Email.Create(_updateCustomerCommand.Email).Value))!;
 
             _updateCustomerCommand.FirstName.Should().Be(_updatedCustomer.FirstName);
             _updateCustomerCommand.LastName.Should().Be(_updatedCustomer.LastName);
@@ -234,7 +233,7 @@ namespace Mc2.CrudTest.AcceptanceTests
         {
             var command = new DeleteCustomerCommand()
             {
-                Id = _targetDeleteCustomer.Id
+                Email = _targetDeleteCustomer.Email
             };
             var repository = new CustomerWriteOnlyRepository(_fixture.Context);
             var unitOfWork = new UnitOfWork(
@@ -299,17 +298,7 @@ namespace Mc2.CrudTest.AcceptanceTests
 
             foreach (var customer in customers)
             {
-                CustomerQueryModel model = new CustomerQueryModel()
-                {
-                    FirstName = customer.FirstName,
-                    LastName = customer.LastName,
-                    Id = customer.Id,
-                    BankAccountNumber = customer.BankAccountNumber.Value,
-                    Email = customer.Email.Value,
-                    DateOfBirth = customer.DateOfBirth,
-                    PhoneNumber = customer.PhoneNumber.Value
-                };
-
+                CustomerQueryModel model = new CustomerQueryModel(customer.Id, customer.FirstName, customer.LastName, customer.DateOfBirth, customer.PhoneNumber.Value, customer.Email.Value, customer.BankAccountNumber.Value);
                 tasks.Add(_mongoFixture.Context.UpsertAsync(model, filter => filter.Id == model.Id));
             }
 

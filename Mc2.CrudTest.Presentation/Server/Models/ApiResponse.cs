@@ -2,7 +2,7 @@
 
 namespace Mc2.CrudTest.Presentation.Server.Models
 {
-    public class ApiResponse
+    public partial class ApiResponse
     {
         [JsonConstructor]
         public ApiResponse(bool success, string successMessage, int statusCode, IEnumerable<ApiErrorResponse> errors)

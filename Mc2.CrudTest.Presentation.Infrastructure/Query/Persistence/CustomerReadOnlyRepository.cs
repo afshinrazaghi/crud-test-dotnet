@@ -33,6 +33,13 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Query.Persistence
             return await asyncCursor.ToListAsync();
         }
 
+        public async Task<CustomerQueryModel?> GetByEmailAsync(string email)
+        {
+
+            using var asyncCursor = await Collection.FindAsync(Builders<CustomerQueryModel>.Filter.Eq(x => x.Email, email));
+            return await asyncCursor.FirstOrDefaultAsync();
+        }
+
 
     }
 }

@@ -11,6 +11,6 @@ namespace Mc2.CrudTest.Presentation.Shared.SharedKernel.Command
     {
         public string MessageType { get; protected init; }
         public Guid AggregateId { get; protected init; }
-        public DateTime OccurredOn { get; private set; }
+        public DateTime OccurredOn { get; private set; } = DateTime.Now;
     }
 }

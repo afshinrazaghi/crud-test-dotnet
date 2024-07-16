@@ -5,6 +5,8 @@ using Mc2.CrudTest.Presentation.Infrastructure.Command.Context;
 using Microsoft.EntityFrameworkCore;
 using Mc2.CrudTest.Presentation.Shared.AppSettings;
 using Mc2.CrudTest.Presentation.Server.Extensions;
+using Mc2.CrudTest.Presentation.Shared;
+using Mc2.CrudTest.Presentation.Shared.Validators;
 
 namespace Mc2.CrudTest.Presentation
 {
@@ -17,11 +19,24 @@ namespace Mc2.CrudTest.Presentation
             // Add services to the container.
             builder.Services.AddControllersWithViews();
             builder.Services.AddRazorPages();
-            builder.Services.ConfigureApplicationServices();
-            builder.Services.ConfigureInfrastructureServices();
-            builder.Services.AddVersioning();
+            builder.Services.AddApplication();
+            builder.Services.AddInfrastructure();
+            builder.Services.AddShared();
+            //builder.Services.AddVersioning();
             builder.Services.AddSwagger();
             builder.Services.AddWriteDbContext();
+
+            builder.Services.AddCors(options =>
+            {
+                options.AddPolicy("AllowBlazorClient",
+                    builder =>
+                    {
+                        builder.AllowAnyOrigin()
+                               .AllowAnyHeader()
+                               .AllowAnyMethod();
+                    });
+            });
+
 
             var app = builder.Build();
 
@@ -47,12 +62,11 @@ namespace Mc2.CrudTest.Presentation
             app.UseSwaggerUI();
             app.UseAuthentication();
             app.UseAuthorization();
-
+            app.UseCors("AllowBlazorClient");
 
             app.MapRazorPages();
             app.MapControllers();
             app.MapFallbackToFile("index.html");
-
             app.Run();
         }
 

@@ -12,9 +12,6 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.Commands
     public class UpdateCustomerCommand : IRequest<Result>
     {
         [Required]
-        public Guid Id { get; set; }
-
-        [Required]
         [MaxLength(200)]
         [DataType(DataType.Text)]
         public string FirstName { get; set; }
@@ -29,9 +26,14 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.Commands
         public DateTime DateOfBirth { get; set; }
 
         [Required]
-        [MaxLength(9)]
+        [MaxLength(13)]
         [DataType(DataType.Text)]
         public string PhoneNumber { get; set; }
+
+        [Required]
+        [MaxLength(250)]
+        [DataType(DataType.EmailAddress)]
+        public string OriginalEmail { get; set; }
 
         [Required]
         [MaxLength(250)]

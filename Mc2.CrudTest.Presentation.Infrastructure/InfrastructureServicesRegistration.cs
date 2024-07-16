@@ -1,4 +1,5 @@
 ﻿using AutoMapper;
+using FluentValidation;
 using Mc2.CrudTest.Presentation.Application.Common.Interfaces.Abstractions;
 using Mc2.CrudTest.Presentation.Application.Common.Interfaces.Persistence.Query;
 using Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate;
@@ -25,9 +26,12 @@ namespace Mc2.CrudTest.Presentation.Infrastructure
 {
     public static class InfrastructureServicesRegistration
     {
-        public static IServiceCollection ConfigureInfrastructureServices(this IServiceCollection services)
+        public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
             var assembly = Assembly.GetExecutingAssembly();
+
+
+            services.AddValidatorsFromAssembly(assembly);
 
             #region Context And UnitOfWork
             services.AddScoped<WriteDbContext>()

@@ -37,9 +37,28 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandle
                 return Result<CreatedCustomerResponse>.Invalid(validationResult.AsErrors());
             }
 
-            var phoneNumber = PhoneNumber.Create(request.PhoneNumber).Value;
-            var email = Email.Create(request.Email).Value;
-            var bankAccountNumber = BankAccountNumber.Create(request.BankAccountNumber).Value;
+            PhoneNumber phoneNumber;
+            Email email;
+            BankAccountNumber bankAccountNumber;
+
+            var phoneNumberCreateResult = PhoneNumber.Create(request.PhoneNumber);
+            if (phoneNumberCreateResult.IsSuccess)
+                phoneNumber = phoneNumberCreateResult.Value;
+            else
+                return Result<CreatedCustomerResponse>.Invalid(phoneNumberCreateResult.ValidationErrors);
+
+            var emailCreateResult = Email.Create(request.Email);
+            if (emailCreateResult.IsSuccess)
+                email = emailCreateResult.Value;
+            else
+                return Result<CreatedCustomerResponse>.Invalid(emailCreateResult.ValidationErrors);
+
+            var bankAccountNumberCreateResult = BankAccountNumber.Create(request.BankAccountNumber);
+            if (bankAccountNumberCreateResult.IsSuccess)
+                bankAccountNumber = bankAccountNumberCreateResult.Value;
+            else
+                return Result<CreatedCustomerResponse>.Invalid(bankAccountNumberCreateResult.ValidationErrors);
+
 
             if (await _repository.ExistsByEmailAsync(email))
                 return Result<CreatedCustomerResponse>.Error("email already exists");

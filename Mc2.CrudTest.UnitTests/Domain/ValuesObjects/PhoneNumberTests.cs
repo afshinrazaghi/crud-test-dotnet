@@ -11,13 +11,8 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
     public class PhoneNumberTests
     {
         [Theory]
-        [InlineData("243611111")]
-        [InlineData("201234567")]
-        [InlineData("20 123 4567")]
-        [InlineData("6 12345678")]
-        [InlineData("10 123 4567")]
-        [InlineData("70 123 4567")]
-        [InlineData("30 123 4567")]
+        [InlineData("+989195512635")]
+        [InlineData("+989123377891")]
         public void CreatePhoneNumber_WhenPhoneNumberIsValid_ReturnsSuccess(string phoneNumber)
         {
             // Arrange
@@ -52,10 +47,10 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             res.Should().NotBeNull();
             res.IsSuccess.Should().BeFalse();
             res.Value.Should().BeNull();
-            res.Errors.Should().NotBeNullOrEmpty()
+            res.ValidationErrors.Should().NotBeNullOrEmpty()
                 .And.OnlyHaveUniqueItems()
                 .And.HaveCount(1)
-                .And.Satisfy(message => message == "Mobile Number is not valid");
+                .And.Satisfy(message => message.ErrorMessage == "Mobile Number is not valid");
 
         }
         

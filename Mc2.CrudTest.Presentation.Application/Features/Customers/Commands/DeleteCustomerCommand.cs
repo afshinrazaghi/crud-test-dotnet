@@ -1,4 +1,5 @@
 ﻿using Ardalis.Result;
+using Mc2.CrudTest.Presentation.Domain.ValueObjects;
 using MediatR;
 using System;
 using System.Collections.Generic;
@@ -14,10 +15,10 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.Commands
         {
 
         }
-        public DeleteCustomerCommand(Guid id)
+        public DeleteCustomerCommand(string email)
         {
-            Id = id;
+            Email = email;
         }
-        public Guid Id { get; set; }
+        public string Email { get; set; }
     }
 }

@@ -27,7 +27,7 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.Commands
         public DateTime DateOfBirth { get; set; }
 
         [Required]
-        [MaxLength(9)]
+        [MaxLength(13)]
         [DataType(DataType.Text)]
         public string PhoneNumber { get; set; }
 

@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
 {
-    public class UpdateCustomerCommandHandlerTests
+    public class UpdateCustomerCommandHandlerTests : IClassFixture<EfSQLiteFixture>
     {
         private readonly UpdateCustomerCommandValidator _validator = new UpdateCustomerCommandValidator();
         private readonly EfSQLiteFixture _fixture;
@@ -36,7 +36,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                     faker.Person.FirstName,
                     faker.Person.LastName,
                     faker.Person.DateOfBirth,
-                    faker.Random.Number(100000000, 999999999).ToString(),
+                    PhoneNumberFixture.Generate(),
                     faker.Person.Email,
                     BankAccountNumberFixture.Generate()
                 )).Generate();
@@ -55,11 +55,11 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
             );
 
             var command = new Faker<UpdateCustomerCommand>()
-                .RuleFor(command => command.Id, customer.Id)
+                .RuleFor(command => command.OriginalEmail, customer.Email.Value)
                 .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(command => command.LastName, faker => faker.Person.LastName)
                 .RuleFor(command => command.DateOfBirth, faker => faker.Person.DateOfBirth)
-                .RuleFor(command => command.PhoneNumber, faker => faker.Random.Number(100000000, 999999999).ToString())
+                .RuleFor(command => command.PhoneNumber, faker => PhoneNumberFixture.Generate())
                 .RuleFor(command => command.Email, faker => faker.Person.Email)
                 .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                 .Generate();
@@ -84,7 +84,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                    faker.Person.FirstName,
                    faker.Person.LastName,
                    faker.Person.DateOfBirth,
-                   faker.Random.Number(100000000, 999999999).ToString(),
+                   PhoneNumberFixture.Generate(),
                    faker.Person.Email,
                    BankAccountNumberFixture.Generate()
                )).Generate(2);
@@ -100,12 +100,12 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
             _fixture.Context.ChangeTracker.Clear();
 
             var command = new Faker<UpdateCustomerCommand>()
-                .RuleFor(command => command.Id, customers[0].Id)
+                .RuleFor(command => command.OriginalEmail, customers[0].Email.Value)
                 .RuleFor(command => command.Email, _ => customers[1].Email.Value)
                 .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(command => command.LastName, faker => faker.Person.LastName)
                 .RuleFor(command => command.DateOfBirth, faker => faker.Person.DateOfBirth)
-                .RuleFor(command => command.PhoneNumber, faker => faker.Random.Number(100000000, 999999999).ToString())
+                .RuleFor(command => command.PhoneNumber, faker => PhoneNumberFixture.Generate())
                 .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                 .Generate();
 
@@ -137,7 +137,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                    faker.Person.FirstName,
                    faker.Person.LastName,
                    faker.Person.DateOfBirth,
-                   faker.Random.Number(100000000, 999999999).ToString(),
+                   PhoneNumberFixture.Generate(),
                    faker.Person.Email,
                    BankAccountNumberFixture.Generate()
                )).Generate(2);
@@ -152,12 +152,12 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
             _fixture.Context.ChangeTracker.Clear();
 
             var command = new Faker<UpdateCustomerCommand>()
-                .RuleFor(command => command.Id, customers[0].Id)
+                .RuleFor(command => command.OriginalEmail, customers[0].Email.Value)
                 .RuleFor(command => command.Email, customers[0].Email.Value)
                 .RuleFor(command => command.FirstName, customers[1].FirstName)
                 .RuleFor(command => command.LastName, customers[1].LastName)
                 .RuleFor(command => command.DateOfBirth, customers[1].DateOfBirth)
-                .RuleFor(command => command.PhoneNumber, faker => faker.Random.Number(100000000, 999999999).ToString())
+                .RuleFor(command => command.PhoneNumber, faker => PhoneNumberFixture.Generate())
                 .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                 .Generate();
 
@@ -183,12 +183,12 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         {
             // Arrange
             var command = new Faker<UpdateCustomerCommand>()
-                .RuleFor(command => command.Id, faker => faker.Random.Guid())
+                .RuleFor(command => command.OriginalEmail, faker => faker.Person.Email)
                 .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(command => command.LastName, faker => faker.Person.LastName)
                 .RuleFor(command => command.DateOfBirth, faker => faker.Person.DateOfBirth)
                 .RuleFor(command => command.Email, faker => faker.Person.Email)
-                .RuleFor(command => command.PhoneNumber, faker => faker.Random.Number(100000000, 999999999).ToString())
+                .RuleFor(command => command.PhoneNumber, faker => PhoneNumberFixture.Generate())
                 .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                 .Generate();
 
@@ -210,7 +210,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
             res.Errors.Should()
                 .NotBeNullOrEmpty()
                 .And.OnlyHaveUniqueItems()
-                .And.Contain(errorMessage => errorMessage == $"No customer found by Id : {command.Id}");
+                .And.Contain(errorMessage => errorMessage == $"No customer found by Email : {command.Email}");
         }
 
 

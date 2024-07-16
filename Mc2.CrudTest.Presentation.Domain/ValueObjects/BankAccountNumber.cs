@@ -1,4 +1,5 @@
 ﻿using Ardalis.Result;
+using Ardalis.Result.FluentValidation;
 using Mc2.CrudTest.Presentation.Domain.ValueObjects.Validators;
 using System;
 using System.Collections.Generic;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace Mc2.CrudTest.Presentation.Domain.ValueObjects
 {
-    public class BankAccountNumber
+    public sealed record BankAccountNumber
     {
         public string Value { get; }
 
@@ -23,8 +24,10 @@ namespace Mc2.CrudTest.Presentation.Domain.ValueObjects
             var bankAccountNumberValidator = new BankAccountNumberValidator();
             var validationResult = bankAccountNumberValidator.Validate(bankAccountNumber);
             if (!validationResult.IsValid)
-                return Result<BankAccountNumber>.Error(validationResult.Errors.First().ErrorMessage);
+                return Result<BankAccountNumber>.Invalid(validationResult.AsErrors());
             return Result<BankAccountNumber>.Success(new BankAccountNumber(bankAccountNumber));
         }
+
+        public override string ToString() => Value;
     }
 }

@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Mc2.CrudTest.Presentation.Shared.Generators;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -10,8 +11,8 @@ namespace Mc2.CrudTest.UnitTests.Fixtures
     {
         public static string Generate()
         {
-            var random = new Random();
-            return (random.Next(11, 99).ToString()) + " " + (random.Next(11, 99).ToString()) + " " + (random.Next(11, 99).ToString()) + " " + (random.Next(111, 999).ToString());
+            var ibanGenerator = new IbanGenerator();
+            return ibanGenerator.Generate();
         }
     }
 }

@@ -1,5 +1,5 @@
 ﻿using Ardalis.Result;
-using Mc2.CrudTest.Presentation.Server.Models;
+using Mc2.CrudTest.Presentation.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mc2.CrudTest.Presentation.Server.Extensions
@@ -27,7 +27,7 @@ namespace Mc2.CrudTest.Presentation.Server.Extensions
                         .ValidationErrors
                         .Select(validation => new ApiErrorResponse(validation.ErrorMessage));
 
-                    return new BadRequestObjectResult(ApiResponse.BadRequest(errors));
+                    return new BadRequestObjectResult(ApiResponse.BadRequest(validationErrors));
 
                 case ResultStatus.NotFound:
                     return new NotFoundObjectResult(ApiResponse.NotFound(errors));

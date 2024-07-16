@@ -3,6 +3,7 @@ using Ardalis.Result.FluentValidation;
 using FluentValidation;
 using Mc2.CrudTest.Presentation.Application.Features.Customers.Commands;
 using Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate;
+using Mc2.CrudTest.Presentation.Domain.ValueObjects;
 using Mc2.CrudTest.Presentation.Shared.SharedKernel.Command;
 using MediatR;
 using System;
@@ -34,9 +35,9 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandle
                 return Result.Invalid(validationResult.AsErrors());
             }
 
-            var customer = await _repository.GetByIdAsync(request.Id);
+            var customer = await _repository.GetByEmailAsync(Email.Create(request.Email).Value);
             if (customer is null)
-                return Result.NotFound($"No customer found by Id : {request.Id}");
+                return Result.NotFound($"No customer found by Email : {request.Email}");
 
             customer.Delete();
 

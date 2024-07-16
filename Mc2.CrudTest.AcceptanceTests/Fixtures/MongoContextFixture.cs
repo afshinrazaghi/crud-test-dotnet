@@ -15,20 +15,43 @@ using System.Threading.Tasks;
 
 namespace Mc2.CrudTest.AcceptanceTests.Fixtures
 {
-    public class MongoFixture
+    public class MongoContextFixture : IDisposable
     {
         public const string ConnectionString = "";
-        private readonly MongoDbRunner _runner;
-        private readonly IMongoDatabase _database;
 
-
-        public MongoFixture()
+        public MongoContextFixture(string connectionString)
         {
-            _runner = MongoDbRunner.Start();
-            IOptions<ConnectionOptions> options = Options.Create<ConnectionOptions>(new ConnectionOptions { NoSqlConnection = _runner.ConnectionString });
+            IOptions<ConnectionOptions> options = Options.Create<ConnectionOptions>(new ConnectionOptions { NoSqlConnection = connectionString });
             Context = new NoSqlDbContext(options, Substitute.For<ILogger<NoSqlDbContext>>());
         }
 
         public NoSqlDbContext Context { get; }
+
+        #region IDisposable
+        private bool disposed;
+
+        ~MongoContextFixture() => Dispose(false);
+
+        public void Dispose()
+        {
+
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if (disposed) return;
+
+            if (disposing)
+            {
+            }
+
+            disposed = true;
+        }
+
+
+
+        #endregion
     }
 }

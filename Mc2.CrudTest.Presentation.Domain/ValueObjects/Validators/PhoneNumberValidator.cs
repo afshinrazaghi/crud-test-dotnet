@@ -17,7 +17,7 @@ public class PhoneNumberValidator : AbstractValidator<string>
             {
                 try
                 {
-                    var parsedPhoneNumber = phoneNumberUtil.Parse(phoneNumber, "NL");
+                    var parsedPhoneNumber = phoneNumberUtil.Parse(phoneNumber, null);
                     return phoneNumberUtil.IsValidNumber(parsedPhoneNumber);
                 }
                 catch

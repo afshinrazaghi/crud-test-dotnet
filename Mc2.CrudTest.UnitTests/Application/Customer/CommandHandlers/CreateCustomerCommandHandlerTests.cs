@@ -38,7 +38,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                 .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(command => command.LastName, faker => faker.Person.LastName)
                 .RuleFor(command => command.DateOfBirth, faker => faker.Person.DateOfBirth)
-                .RuleFor(command => command.PhoneNumber, faker => faker.Random.Number(100000000, 999999999).ToString())
+                .RuleFor(command => command.PhoneNumber, faker => PhoneNumberFixture.Generate())
                 .RuleFor(command => command.Email, faker => faker.Person.Email)
                 .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                 .Generate();
@@ -75,7 +75,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
                .RuleFor(command => command.LastName, faker => faker.Person.LastName)
                .RuleFor(command => command.DateOfBirth, faker => faker.Person.DateOfBirth)
-               .RuleFor(command => command.PhoneNumber, faker => faker.Random.Number(100000000, 999999999).ToString())
+               .RuleFor(command => command.PhoneNumber, faker => PhoneNumberFixture.Generate())
                .RuleFor(command => command.Email, faker => faker.Person.Email)
                .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                .Generate();
@@ -119,7 +119,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
                .RuleFor(command => command.LastName, faker => faker.Person.LastName)
                .RuleFor(command => command.DateOfBirth, faker => faker.Person.DateOfBirth)
-               .RuleFor(command => command.PhoneNumber, faker => faker.Random.Number(100000000, 999999999).ToString())
+               .RuleFor(command => command.PhoneNumber, faker => PhoneNumberFixture.Generate())
                .RuleFor(command => command.Email, faker => faker.Person.Email)
                .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                .Generate();

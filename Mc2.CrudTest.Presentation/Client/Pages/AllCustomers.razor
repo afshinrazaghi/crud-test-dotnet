@@ -1,0 +1,154 @@
+﻿@page "/customers"
+@inject HttpClient Http
+@using Ardalis.Result;
+@using CrudTest.Presentation.Application
+@using Mc2.CrudTest.Presentation.Application.Features.Customers.Commands
+@using Mc2.CrudTest.Presentation.Application.Models
+@using Mc2.CrudTest.Presentation.Shared.Extensions
+@using Mc2.CrudTest.Presentation.Shared.Models
+@using Blazored.Toast.Services;
+@using System.Net.Mime
+@inject IToastService toastService;
+@inject NavigationManager navigationManager
+@inject SweetAlertService Swal;
+
+<div>
+    <h1>Customer List</h1>
+    <div class="mt-2 mb-2">
+        <NavLink class="btn btn-primary" href="createCustomer">
+            <span>Create</span>
+        </NavLink>
+    </div>
+
+    <table class="table table-bordered table-striped table-responsive">
+        <thead>
+            <tr>
+                <th>FirstName</th>
+                <th>LastName</th>
+                <th>Email</th>
+                <th>PhoneNumber</th>
+                <th>BankAccountNumber</th>
+                <th>DateOfBirth</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @if (customers != null && customers.Any())
+            {
+                @foreach (var customer in customers)
+                {
+                    <tr>
+                        <td>@customer.FirstName</td>
+                        <td>@customer.LastName</td>
+                        <td>@customer.Email</td>
+                        <td>@customer.PhoneNumber</td>
+                        <td>@customer.BankAccountNumber</td>
+                        <td>@customer.DateOfBirth.ToString("yyyy-MM-dd")</td>
+                        <td>
+                            <button name="edit" class="btn btn-warning" @onclick="()=>EditCustomer(customer)">
+                                <span class="oi oi-pencil"></span>
+                            </button>
+                            <button name="remove" class="btn btn-danger" @onclick="async()=>await RemoveCustomer(customer)">
+                                <span class="oi oi-x"></span>
+                            </button>
+                        </td>
+                    </tr>
+                }
+            }
+            else
+            {
+                <tr>
+                    <td colspan="7">
+                        No Records Found
+                    </td>
+                </tr>
+            }
+
+        </tbody>
+
+    </table>
+</div>
+
+@code {
+    private IEnumerable<CustomerQueryModel>? customers;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await FetchCustomers();
+    }
+
+
+    private async Task FetchCustomers()
+    {
+        MainLayout.IsLoading = true;
+        try
+        {
+            var getCustomerResult = await Http.GetFromJsonAsync<ApiResponse<IEnumerable<CustomerQueryModel>>>(Program.EndPoint);
+            if (getCustomerResult != null && getCustomerResult.Success)
+            {
+                customers = getCustomerResult.Result;
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.ToString());
+        }
+        MainLayout.IsLoading = false;
+
+    }
+
+    private void EditCustomer(CustomerQueryModel customer)
+    {
+        navigationManager.NavigateTo($"/editCustomer/{customer.Email}");
+    }
+
+    private async Task RemoveCustomer(CustomerQueryModel customer)
+    {
+        var res = await Swal.FireAsync(new SweetAlertOptions
+            {
+                ShowCancelButton = true,
+                ShowConfirmButton = true,
+                CancelButtonText = "No",
+                ConfirmButtonText = "Yes",
+                Text = "Are you sure?",
+
+
+            });
+
+        if (res.IsConfirmed)
+        {
+            DeleteCustomerCommand command = new DeleteCustomerCommand()
+                {
+                    Email = customer.Email
+                };
+
+            var jsonContent = new StringContent(command.ToJson(), System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
+            HttpRequestMessage requestMessage = new HttpRequestMessage
+                {
+                    Method = HttpMethod.Delete,
+                    RequestUri = new Uri(Program.EndPoint),
+                    Content = jsonContent
+                };
+
+            MainLayout.IsLoading = true;
+
+            var response = await Http.SendAsync(requestMessage);
+            if (response.IsSuccessStatusCode)
+            {
+                var deleteResult = (await response.Content.ReadAsStringAsync()).FromJson<ApiResponse>();
+                if (deleteResult.Success)
+                {
+                    await Swal.FireAsync("Success", deleteResult.SuccessMessage, SweetAlertIcon.Success);
+                    await FetchCustomers();
+                }
+                else
+                {
+                    await Swal.FireAsync("Error", string.Join(",", deleteResult.Errors.Select(x => x.Message)), SweetAlertIcon.Error);
+                }
+            }
+            MainLayout.IsLoading = false;
+        }
+
+    }
+
+}

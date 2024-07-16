@@ -1,5 +1,6 @@
 ﻿using FluentAssertions;
 using Mc2.CrudTest.Presentation.Domain.ValueObjects;
+using Mc2.CrudTest.UnitTests.Fixtures;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,9 +12,10 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
 
     public class BankAccountNumberTests
     {
-        [Theory]
-        [InlineData("12 34 56 789")]
-        [InlineData("44 53 24 567")]
+
+        [Theory()]
+        [InlineData("NL20INGB0001234567")]
+        [InlineData("NL91ABNA0417164300")]
         public void CreateBankAccountNumber_WhenIsValid_ReturnSuccess(string bankAccountNumber)
         {
             // Arrange
@@ -42,10 +44,10 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             res.Should().NotBeNull();
             res.IsSuccess.Should().BeFalse();
             res.Value.Should().BeNull();
-            res.Errors.Should().NotBeNullOrEmpty()
+            res.ValidationErrors.Should().NotBeNullOrEmpty()
                 .And.OnlyHaveUniqueItems()
                 .And.HaveCount(1)
-                .And.Satisfy(errorMessage => errorMessage == "Back Account Number is not valid");
+                .And.Satisfy(errorMessage => errorMessage.ErrorMessage == "Back Account Number is not valid");
 
         }
 
@@ -63,10 +65,10 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             res.Should().NotBeNull();
             res.IsSuccess.Should().BeFalse();
             res.Value.Should().BeNull();
-            res.Errors.Should().NotBeNullOrEmpty()
+            res.ValidationErrors.Should().NotBeNullOrEmpty()
                 .And.OnlyHaveUniqueItems()
                 .And.HaveCount(1)
-                .And.Satisfy(errorMessage => errorMessage == "Back Account Number cannot be empty");
+                .And.Satisfy(errorMessage => errorMessage.ErrorMessage == "Back Account Number cannot be empty");
         }
     }
 }

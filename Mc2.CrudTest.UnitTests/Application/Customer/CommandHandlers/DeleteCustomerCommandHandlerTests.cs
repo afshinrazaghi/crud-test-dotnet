@@ -19,7 +19,7 @@ using System.Threading.Tasks;
 
 namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
 {
-    public class DeleteCustomerCommandHandlerTests
+    public class DeleteCustomerCommandHandlerTests : IClassFixture<EfSQLiteFixture>
     {
         private readonly DeleteCustomerCommandValidator validator = new DeleteCustomerCommandValidator();
         private readonly EfSQLiteFixture _fixture;
@@ -38,7 +38,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                    faker.Person.FirstName,
                    faker.Person.LastName,
                    faker.Person.DateOfBirth,
-                   faker.Random.Number(100000000, 999999999).ToString(),
+                   PhoneNumberFixture.Generate(),
                    faker.Person.Email,
                    BankAccountNumberFixture.Generate()
                )).Generate();
@@ -60,7 +60,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                 repository,
                 unitOfWork);
 
-            var command = new DeleteCustomerCommand() { Id = customer.Id };
+            var command = new DeleteCustomerCommand() { Email = customer.Email.Value };
 
             // Act
 
@@ -77,7 +77,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         {
             // Arrange
             var repository = new CustomerWriteOnlyRepository(_fixture.Context);
-            var command = new DeleteCustomerCommand(Guid.NewGuid());
+            var command = new DeleteCustomerCommand("test@gmail.com");
             var handler = new DeleteCustomerCommandHandler(
                 validator,
                 repository,
@@ -95,7 +95,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
             res.Errors
                 .Should().NotBeNullOrEmpty()
                 .And.OnlyHaveUniqueItems()
-                .And.Contain(errorMessage => errorMessage == $"No customer found by Id : {command.Id}");
+                .And.Contain(errorMessage => errorMessage == $"No customer found by Email : {command.Email}");
         }
 
         [Fact]
@@ -115,7 +115,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
             // Assert
             res.Should().NotBeNull();
             res.IsSuccess.Should().BeFalse();
-            res.Errors
+            res.ValidationErrors
                 .Should().NotBeNullOrEmpty()
                 .And.OnlyHaveUniqueItems();
         }

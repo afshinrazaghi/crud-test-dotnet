@@ -1,6 +1,14 @@
 ﻿@inherits LayoutComponentBase
 
+
+ <BlazoredToasts />
 <div class="page">
+
+    @if (IsLoading)
+    {
+        <div class="spinner"></div>
+    }
+
     <div class="sidebar">
         <NavMenu />
     </div>
@@ -15,3 +23,8 @@
         </article>
     </main>
 </div>
+
+
+@code {
+    public static bool IsLoading { get; set; }
+}

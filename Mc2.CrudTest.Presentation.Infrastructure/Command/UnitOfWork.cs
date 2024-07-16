@@ -103,7 +103,14 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Command
 
             await Task.WhenAll(tasks);
 
-            await _eventStoreRepository.StoreAsync(eventStores);
+            try
+            {
+                await _eventStoreRepository.StoreAsync(eventStores);
+            }
+            catch (Exception ex)
+            {
+
+            }
         }
 
 

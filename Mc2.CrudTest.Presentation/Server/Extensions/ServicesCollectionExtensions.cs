@@ -17,6 +17,9 @@ namespace Mc2.CrudTest.Presentation.Server.Extensions
         {
             services.AddDbContext<WriteDbContext>((serviceProvider, optionsBuilder) =>
                 ConfigureDbContext<WriteDbContext>(serviceProvider, optionsBuilder, QueryTrackingBehavior.TrackAll));
+
+            services.AddDbContext<EventStoreDbContext>((serviceProvider, optionsBuilder) =>
+                 ConfigureDbContext<EventStoreDbContext>(serviceProvider, optionsBuilder, QueryTrackingBehavior.NoTrackingWithIdentityResolution));
             return services;
         }
 
