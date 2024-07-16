@@ -22,8 +22,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Mc2.CrudTest.Presentation.Application\Mc2.CrudTest.Presentation.Application.csproj" />
-    <ProjectReference Include="..\Mc2.CrudTest.Presentation.Domain\Mc2.CrudTest.Presentation.Domain.csproj" />
     <ProjectReference Include="..\Mc2.CrudTest.Presentation.Infrastructure\Mc2.CrudTest.Presentation.Infrastructure.csproj" />
   </ItemGroup>
 
