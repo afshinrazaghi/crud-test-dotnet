@@ -25,32 +25,32 @@ namespace Mc2.CrudTest.Presentation.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Create([FromBody][Required] CreateCustomerCommand command) =>
-            (await _mediator.Send(command)).ToActionResult();
+        public async Task<IActionResult> Create([FromBody][Required] CreateCustomerCommand command, CancellationToken cancellationToken) =>
+            (await _mediator.Send(command, cancellationToken)).ToActionResult();
 
 
         [HttpPut]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Update([FromBody][Required] UpdateCustomerCommand command) =>
-           (await _mediator.Send(command)).ToActionResult();
+        public async Task<IActionResult> Update([FromBody][Required] UpdateCustomerCommand command,  CancellationToken cancellationToken) =>
+           (await _mediator.Send(command, cancellationToken)).ToActionResult();
 
 
         [HttpDelete]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> Delete([FromBody][Required] DeleteCustomerCommand command) =>
-           (await _mediator.Send(command)).ToActionResult();
+        public async Task<IActionResult> Delete([FromBody][Required] DeleteCustomerCommand command, CancellationToken cancellationToken) =>
+           (await _mediator.Send(command, cancellationToken)).ToActionResult();
 
 
         [HttpGet]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetAllCustomers([FromQuery] GetAllCustomerQuery query) =>
-           (await _mediator.Send(query)).ToActionResult();
+        public async Task<IActionResult> GetAllCustomers([FromQuery] GetAllCustomerQuery query, CancellationToken cancellationToken) =>
+           (await _mediator.Send(query, cancellationToken)).ToActionResult();
 
 
 
@@ -59,8 +59,8 @@ namespace Mc2.CrudTest.Presentation.Server.Controllers
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status200OK)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status400BadRequest)]
         [ProducesResponseType(typeof(ApiResponse), StatusCodes.Status500InternalServerError)]
-        public async Task<IActionResult> GetCustomerByEmail([FromQuery] GetCustomerByEmailQuery query) =>
-           (await _mediator.Send(query)).ToActionResult();
+        public async Task<IActionResult> GetCustomerByEmail([FromQuery] GetCustomerByEmailQuery query,  CancellationToken cancellationToken) =>
+           (await _mediator.Send(query, cancellationToken)).ToActionResult();
 
 
     }

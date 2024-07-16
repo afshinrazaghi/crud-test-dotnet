@@ -17,6 +17,9 @@ using Mc2.CrudTest.Presentation.Shared.Extensions;
 using Mc2.CrudTest.Presentation.Application.Features.Customers.Queries;
 using Mc2.CrudTest.Presentation.Application.Models;
 using Microsoft.Data.SqlClient;
+using Mc2.CrudTest.Presentation.Application.Features.Customers.Responses;
+using Mc2.CrudTest.Presentation.Shared.Models;
+using Mc2.CrudTest.AcceptanceTests.Support;
 
 namespace Mc2.CrudTest.AcceptanceTests.Drivers
 {
@@ -33,44 +36,48 @@ namespace Mc2.CrudTest.AcceptanceTests.Drivers
             _webApplicationFactory = InitializeWebAppFactory();
         }
 
-        public async Task<HttpResponseMessage> CreateCustomerAsync(CreateCustomerCommand command)
+        public async Task<ApiResponse<CreatedCustomerResponse>> CreateCustomerAsync(CreateCustomerCommand command, CancellationToken cancellationToken)
         {
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
-            var commandAsJsonString = command.ToJson();
-            using var jsonContent = new StringContent(commandAsJsonString, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
-            var res = await httpClient.PostAsync(EndPoint, jsonContent);
-            return res;
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            string commandAsJsonString = command.ToJson();
+            using HttpContent jsonContent = new StringContent(commandAsJsonString, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
+            HttpResponseMessage res = await httpClient.PostAsync(EndPoint, jsonContent, cancellationToken);
+            ApiResponse<CreatedCustomerResponse> result = (await res.Content.ReadAsStringAsync()).FromJson<ApiResponse<CreatedCustomerResponse>>();
+            return result;
         }
 
-        public async Task<HttpResponseMessage> GetAllCustomersAsync(GetAllCustomerQuery query)
+        public async Task<ApiResponse<IEnumerable<CustomerQueryModel>>> GetAllCustomersAsync(CancellationToken cancellationToken)
         {
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
-            var res = await httpClient.GetAsync(EndPoint);
-            return res;
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            using HttpResponseMessage res = await httpClient.GetAsync(EndPoint, cancellationToken);
+            ApiResponse<IEnumerable<CustomerQueryModel>> result = (await res.Content.ReadAsStringAsync()).FromJson<ApiResponse<IEnumerable<CustomerQueryModel>>>();
+            return result;
         }
 
-        public async Task<HttpResponseMessage> UpdateCustomerAsync(UpdateCustomerCommand command)
+        public async Task<ApiResponse> UpdateCustomerAsync(UpdateCustomerCommand command, CancellationToken cancellationToken)
         {
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
-            var commandAsJsonString = command.ToJson();
-            using var jsonContent = new StringContent(commandAsJsonString, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
-            var res = await httpClient.PutAsync(EndPoint, jsonContent);
-            return res;
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            string commandAsJsonString = command.ToJson();
+            HttpContent jsonContent = new StringContent(commandAsJsonString, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
+            HttpResponseMessage res = await httpClient.PutAsync(EndPoint, jsonContent, cancellationToken);
+            ApiResponse response = (await res.Content.ReadAsStringAsync()).FromJson<ApiResponse>();
+            return response;
         }
 
-        public async Task<HttpResponseMessage> DeleteCustomerAsync(DeleteCustomerCommand command)
+        public async Task<ApiResponse> DeleteCustomerAsync(DeleteCustomerCommand command, CancellationToken cancellationToken)
         {
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
-            var commandAsJsonString = command.ToJson();
-            using var jsonContent = new StringContent(commandAsJsonString, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            string commandAsJsonString = command.ToJson();
+            using HttpContent jsonContent = new StringContent(commandAsJsonString, System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
             using HttpRequestMessage httpRequest = new HttpRequestMessage
             {
                 Method = HttpMethod.Delete,
                 RequestUri = new Uri(EndPoint, UriKind.Relative),
                 Content = jsonContent
             };
-            var res = await httpClient.SendAsync(httpRequest);
-            return res;
+            HttpResponseMessage res = await httpClient.SendAsync(httpRequest, cancellationToken);
+            ApiResponse result = (await res.Content.ReadAsStringAsync()).FromJson<ApiResponse>();
+            return result;
         }
 
         private WebApplicationFactory<Program> InitializeWebAppFactory(
@@ -87,34 +94,19 @@ namespace Mc2.CrudTest.AcceptanceTests.Drivers
 
                     hostBuilder.ConfigureServices(services =>
                     {
-                        services.RemoveAll<WriteDbContext>();
-                        services.RemoveAll<DbContextOptions<WriteDbContext>>();
-                        services.RemoveAll<EventStoreDbContext>();
-                        services.RemoveAll<DbContextOptions<EventStoreDbContext>>();
-                        services.RemoveAll<ISynchronizeDb>();
+                        services.RemoveDbContexts();
 
-                        services.AddDbContext<WriteDbContext>(
-                            options => options.UseSqlServer(new SqlConnection(_msSqlFixture.Container.GetConnectionString()))
-                        );
-
-                        services.AddDbContext<EventStoreDbContext>(options =>
-                        {
-                            options.UseSqlServer(new SqlConnection(_msSqlFixture.Container.GetConnectionString()));
-                        });
-
-                        services.AddSingleton<IReadDbContext, NoSqlDbContext>();
-                        services.AddSingleton<ISynchronizeDb, NoSqlDbContext>();
+                        services.AddDbContexts(_msSqlFixture.Container.GetConnectionString());
 
                         configureServices?.Invoke(services);
 
-                        using var serviceProvider = services.BuildServiceProvider(true);
-                        using var serviceScope = serviceProvider.CreateScope();
+                        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+                        using IServiceScope serviceScope = serviceProvider.CreateScope();
 
-                        var writeDbContext = serviceScope.ServiceProvider.GetRequiredService<WriteDbContext>();
+                        WriteDbContext writeDbContext = serviceScope.ServiceProvider.GetRequiredService<WriteDbContext>();
                         writeDbContext.Database.EnsureCreated();
 
-                        //services.AddSingleton(_ => Substitute.For<EventStoreDbContext>());
-                        var eventStoreDbContext = serviceScope.ServiceProvider.GetRequiredService<EventStoreDbContext>();
+                        EventStoreDbContext eventStoreDbContext = serviceScope.ServiceProvider.GetRequiredService<EventStoreDbContext>();
                         eventStoreDbContext.Database.EnsureCreated();
 
                         configureServiceScope?.Invoke(serviceScope);
@@ -149,9 +141,12 @@ namespace Mc2.CrudTest.AcceptanceTests.Drivers
             if (disposed)
                 return;
 
-            _mongoDbFixture.DisposeAsync().GetAwaiter().GetResult();
-            _msSqlFixture.DisposeAsync().GetAwaiter().GetResult();
-            _webApplicationFactory.Dispose();
+            if (disposing)
+            {
+                _mongoDbFixture.DisposeAsync().GetAwaiter().GetResult();
+                _msSqlFixture.DisposeAsync().GetAwaiter().GetResult();
+                _webApplicationFactory.Dispose();
+            }
 
             disposed = true;
         }
