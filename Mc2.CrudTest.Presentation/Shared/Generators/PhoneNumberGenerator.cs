@@ -11,8 +11,8 @@ namespace Mc2.CrudTest.Presentation.Shared.Generators
     {
         public string Generate()
         {
-            var random = new Random();
-            var number = random.Next(1111111, 9999999);
+            Random random = new Random();
+            int number = random.Next(1111111, 9999999);
             string phoneNumber = $"+98919{number}";
             return phoneNumber;
         }

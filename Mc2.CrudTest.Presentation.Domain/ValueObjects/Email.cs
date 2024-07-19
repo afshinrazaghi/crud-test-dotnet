@@ -20,8 +20,8 @@ namespace Mc2.CrudTest.Presentation.Domain.ValueObjects
 
         public static Result<Email> Create(string email)
         {
-            var emailValidator = new EmailValidator();
-            var validationResult = emailValidator.Validate(email);
+            EmailValidator emailValidator = new EmailValidator();
+            FluentValidation.Results.ValidationResult validationResult = emailValidator.Validate(email);
             if (!validationResult.IsValid)
                 return Result<Email>.Invalid(validationResult.AsErrors());
             return Result<Email>.Success(new Email(email));

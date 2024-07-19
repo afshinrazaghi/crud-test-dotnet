@@ -11,7 +11,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure
     {
         public static IEnumerable<Type> GetAllTypesOf<TInterface>(this Assembly assembly)
         {
-            var isAssignableToTInterface = typeof(TInterface).IsAssignableFrom;
+            Func<Type?, bool> isAssignableToTInterface = typeof(TInterface).IsAssignableFrom;
             return assembly
                 .GetTypes()
                 .Where(type => type.IsClass && !type.IsAbstract && !type.IsInterface && isAssignableToTInterface(type))

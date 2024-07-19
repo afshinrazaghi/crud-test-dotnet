@@ -65,14 +65,14 @@ namespace Mc2.CrudTest.Presentation.Client.Tests.Fixture
 
                         configureServices?.Invoke(services);
 
-                        using var serviceProvider = services.BuildServiceProvider(true);
-                        using var serviceScope = serviceProvider.CreateScope();
+                        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+                        using IServiceScope serviceScope = serviceProvider.CreateScope();
 
-                        var writeDbContext = serviceScope.ServiceProvider.GetRequiredService<WriteDbContext>();
+                        WriteDbContext writeDbContext = serviceScope.ServiceProvider.GetRequiredService<WriteDbContext>();
                         writeDbContext.Database.EnsureCreated();
 
                         //services.AddSingleton(_ => Substitute.For<EventStoreDbContext>());
-                        var eventStoreDbContext = serviceScope.ServiceProvider.GetRequiredService<EventStoreDbContext>();
+                        EventStoreDbContext eventStoreDbContext = serviceScope.ServiceProvider.GetRequiredService<EventStoreDbContext>();
                         eventStoreDbContext.Database.EnsureCreated();
 
                         configureServiceScope?.Invoke(serviceScope);
@@ -94,8 +94,8 @@ namespace Mc2.CrudTest.Presentation.Client.Tests.Fixture
                     {
                         configureServices?.Invoke(services);
 
-                        using var serviceProvider = services.BuildServiceProvider(true);
-                        using var serviceScope = serviceProvider.CreateScope();
+                        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+                        using IServiceScope serviceScope = serviceProvider.CreateScope();
 
                         configureServiceScope?.Invoke(serviceScope);
 

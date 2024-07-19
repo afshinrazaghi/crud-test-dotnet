@@ -31,7 +31,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         public async void Handle_WhenCalledWithValidCustomer_ReturnsSuccess()
         {
             // Arrange
-            var customer = new Faker<Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate.Customer>().
+            Presentation.Domain.Entities.CustomerAggregate.Customer customer = new Faker<Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate.Customer>().
                 CustomInstantiator(faker => CustomerFactory.Create(
                     faker.Person.FirstName,
                     faker.Person.LastName,
@@ -41,20 +41,20 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                     BankAccountNumberFixture.Generate()
                 )).Generate();
 
-            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(_fixture.Context);
             repository.Add(customer);
 
             await _fixture.Context.SaveChangesAsync();
             _fixture.Context.ChangeTracker.Clear();
 
-            var unitOfWork = new UnitOfWork(
+            UnitOfWork unitOfWork = new UnitOfWork(
                 _fixture.Context,
                 Substitute.For<IEventStoreRepository>(),
                 Substitute.For<IMediator>(),
                 Substitute.For<ILogger<UnitOfWork>>()
             );
 
-            var command = new Faker<UpdateCustomerCommand>()
+            UpdateCustomerCommand command = new Faker<UpdateCustomerCommand>()
                 .RuleFor(command => command.OriginalEmail, customer.Email.Value)
                 .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(command => command.LastName, faker => faker.Person.LastName)
@@ -64,10 +64,10 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                 .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                 .Generate();
 
-            var handler = new UpdateCustomerCommandHandler(_validator, repository, unitOfWork);
+            UpdateCustomerCommandHandler handler = new UpdateCustomerCommandHandler(_validator, repository, unitOfWork);
 
             // Act
-            var res = await handler.Handle(command, CancellationToken.None);
+            Ardalis.Result.Result res = await handler.Handle(command, CancellationToken.None);
 
             // Assert
             res.Should().NotBeNull();
@@ -79,7 +79,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         public async void Handle_WhenDuplicateEmail_ReturnsFail()
         {
             // Arrange
-            var customers = new Faker<Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate.Customer>().
+            List<Presentation.Domain.Entities.CustomerAggregate.Customer> customers = new Faker<Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate.Customer>().
                CustomInstantiator(faker => CustomerFactory.Create(
                    faker.Person.FirstName,
                    faker.Person.LastName,
@@ -90,8 +90,8 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                )).Generate(2);
 
 
-            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
-            foreach (var customer in customers)
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            foreach (Presentation.Domain.Entities.CustomerAggregate.Customer customer in customers)
             {
                 repository.Add(customer);
             }
@@ -99,7 +99,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
             await _fixture.Context.SaveChangesAsync();
             _fixture.Context.ChangeTracker.Clear();
 
-            var command = new Faker<UpdateCustomerCommand>()
+            UpdateCustomerCommand command = new Faker<UpdateCustomerCommand>()
                 .RuleFor(command => command.OriginalEmail, customers[0].Email.Value)
                 .RuleFor(command => command.Email, _ => customers[1].Email.Value)
                 .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
@@ -109,14 +109,14 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                 .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                 .Generate();
 
-            var handler = new UpdateCustomerCommandHandler(
+            UpdateCustomerCommandHandler handler = new UpdateCustomerCommandHandler(
                 _validator,
                 repository,
                 Substitute.For<IUnitOfWork>());
 
             // Act
 
-            var res = await handler.Handle(command, CancellationToken.None);
+            Ardalis.Result.Result res = await handler.Handle(command, CancellationToken.None);
 
             // Assert
             res.Should().NotBeNull();
@@ -132,7 +132,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         public async void Handle_WhenDuplicateFirstNameAndLastNameAndDateOfBirth_ReturnFail()
         {
             // Arrange
-            var customers = new Faker<Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate.Customer>().
+            List<Presentation.Domain.Entities.CustomerAggregate.Customer> customers = new Faker<Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate.Customer>().
                CustomInstantiator(faker => CustomerFactory.Create(
                    faker.Person.FirstName,
                    faker.Person.LastName,
@@ -142,8 +142,8 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                    BankAccountNumberFixture.Generate()
                )).Generate(2);
 
-            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
-            foreach (var customer in customers)
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            foreach (Presentation.Domain.Entities.CustomerAggregate.Customer customer in customers)
             {
                 repository.Add(customer);
             }
@@ -151,7 +151,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
             await _fixture.Context.SaveChangesAsync();
             _fixture.Context.ChangeTracker.Clear();
 
-            var command = new Faker<UpdateCustomerCommand>()
+            UpdateCustomerCommand command = new Faker<UpdateCustomerCommand>()
                 .RuleFor(command => command.OriginalEmail, customers[0].Email.Value)
                 .RuleFor(command => command.Email, customers[0].Email.Value)
                 .RuleFor(command => command.FirstName, customers[1].FirstName)
@@ -162,13 +162,13 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                 .Generate();
 
 
-            var handler = new UpdateCustomerCommandHandler(
+            UpdateCustomerCommandHandler handler = new UpdateCustomerCommandHandler(
                 _validator,
                 repository,
                 Substitute.For<IUnitOfWork>());
 
             // Act
-            var res = await handler.Handle(command, CancellationToken.None);
+            Ardalis.Result.Result res = await handler.Handle(command, CancellationToken.None);
 
             // Assert
             res.Should().NotBeNull();
@@ -182,7 +182,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         public async void Handle_WhenCustomerNotFound_ReturnFail()
         {
             // Arrange
-            var command = new Faker<UpdateCustomerCommand>()
+            UpdateCustomerCommand command = new Faker<UpdateCustomerCommand>()
                 .RuleFor(command => command.OriginalEmail, faker => faker.Person.Email)
                 .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(command => command.LastName, faker => faker.Person.LastName)
@@ -192,9 +192,9 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                 .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                 .Generate();
 
-            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(_fixture.Context);
 
-            var handler = new UpdateCustomerCommandHandler(
+            UpdateCustomerCommandHandler handler = new UpdateCustomerCommandHandler(
                 _validator,
                 repository,
                 Substitute.For<IUnitOfWork>()
@@ -202,7 +202,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
 
             // Act
 
-            var res = await handler.Handle(command, CancellationToken.None);
+            Ardalis.Result.Result res = await handler.Handle(command, CancellationToken.None);
 
             // Assert
             res.Should().NotBeNull();
@@ -218,13 +218,13 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         public async void Handle_WhenCommandInValid_ReturnsFail()
         {
             // Arrange
-            var handler = new UpdateCustomerCommandHandler(
+            UpdateCustomerCommandHandler handler = new UpdateCustomerCommandHandler(
                 _validator,
                 Substitute.For<ICustomerWriteOnlyRepository>(),
                 Substitute.For<IUnitOfWork>());
             // Act
 
-            var res = await handler.Handle(new UpdateCustomerCommand(), CancellationToken.None);
+            Ardalis.Result.Result res = await handler.Handle(new UpdateCustomerCommand(), CancellationToken.None);
 
             // Assert
             res.Should().NotBeNull();

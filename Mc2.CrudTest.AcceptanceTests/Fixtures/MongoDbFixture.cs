@@ -15,7 +15,7 @@ namespace Mc2.CrudTest.AcceptanceTests.Fixtures
         public MongoDbContainer Container { get; }
         public MongoDbFixture()
         {
-            var configuration = ConfigurationHelper.GetConfiguration();
+            IConfiguration configuration = ConfigurationHelper.GetConfiguration();
             int port = configuration.GetSection("MongoDb").GetValue<int>("PORT");
             Container = new MongoDbBuilder()
                 .WithImage("mongo:latest")

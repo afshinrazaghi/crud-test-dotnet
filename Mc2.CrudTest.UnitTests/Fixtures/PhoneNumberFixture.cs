@@ -11,7 +11,7 @@ namespace Mc2.CrudTest.UnitTests.Fixtures
     {
         public static string Generate()
         {
-            var phoneNumberGenerator = new PhoneNumberGenerator();
+            PhoneNumberGenerator phoneNumberGenerator = new PhoneNumberGenerator();
             return phoneNumberGenerator.Generate();
         }
     }

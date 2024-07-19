@@ -69,8 +69,8 @@ namespace Mc2.CrudTest.Presentation.Server.Extensions
            QueryTrackingBehavior queryTrackingBehavior)
            where TContext : DbContext
         {
-            var logger = serviceProvider.GetRequiredService<ILogger<TContext>>();
-            var options = serviceProvider.GetOptions<ConnectionOptions>();
+            ILogger<TContext> logger = serviceProvider.GetRequiredService<ILogger<TContext>>();
+            ConnectionOptions options = serviceProvider.GetOptions<ConnectionOptions>();
 
             optionBuilder
                 .UseSqlServer(options.SqlConnection, sqlServerOptions =>
@@ -86,7 +86,7 @@ namespace Mc2.CrudTest.Presentation.Server.Extensions
                         return;
 
 
-                    var exceptions = retryEventData.ExceptionsEncountered;
+                    IReadOnlyList<Exception> exceptions = retryEventData.ExceptionsEncountered;
 
                     logger.LogWarning(
                         "----- DbContext: Retry #{Count} with delay {Delay} due to error: {Message}",
@@ -95,7 +95,7 @@ namespace Mc2.CrudTest.Presentation.Server.Extensions
                         exceptions[^1].Message);
                 });
 
-            var environment = serviceProvider.GetRequiredService<IHostEnvironment>();
+            IHostEnvironment environment = serviceProvider.GetRequiredService<IHostEnvironment>();
 
             if (!environment.IsProduction())
             {

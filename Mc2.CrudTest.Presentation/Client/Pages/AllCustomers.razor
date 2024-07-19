@@ -35,7 +35,7 @@
         <tbody>
             @if (customers != null && customers.Any())
             {
-                @foreach (var customer in customers)
+                @foreach (CustomerQueryModel customer in customers)
                 {
                     <tr>
                         <td>@customer.FirstName</td>
@@ -83,7 +83,7 @@
         MainLayout.IsLoading = true;
         try
         {
-            var getCustomerResult = await Http.GetFromJsonAsync<ApiResponse<IEnumerable<CustomerQueryModel>>>(Program.EndPoint);
+            ApiResponse<IEnumerable<CustomerQueryModel>>? getCustomerResult = await Http.GetFromJsonAsync<ApiResponse<IEnumerable<CustomerQueryModel>>>(Program.EndPoint);
             if (getCustomerResult != null && getCustomerResult.Success)
             {
                 customers = getCustomerResult.Result;
@@ -104,7 +104,7 @@
 
     private async Task RemoveCustomer(CustomerQueryModel customer)
     {
-        var res = await Swal.FireAsync(new SweetAlertOptions
+        SweetAlertResult res = await Swal.FireAsync(new SweetAlertOptions
             {
                 ShowCancelButton = true,
                 ShowConfirmButton = true,
@@ -122,7 +122,7 @@
                     Email = customer.Email
                 };
 
-            var jsonContent = new StringContent(command.ToJson(), System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
+            HttpContent jsonContent = new StringContent(command.ToJson(), System.Text.Encoding.UTF8, MediaTypeNames.Application.Json);
             HttpRequestMessage requestMessage = new HttpRequestMessage
                 {
                     Method = HttpMethod.Delete,
@@ -132,10 +132,10 @@
 
             MainLayout.IsLoading = true;
 
-            var response = await Http.SendAsync(requestMessage);
+            HttpResponseMessage response = await Http.SendAsync(requestMessage);
             if (response.IsSuccessStatusCode)
             {
-                var deleteResult = (await response.Content.ReadAsStringAsync()).FromJson<ApiResponse>();
+                ApiResponse deleteResult = (await response.Content.ReadAsStringAsync()).FromJson<ApiResponse>();
                 if (deleteResult.Success)
                 {
                     await Swal.FireAsync("Success", deleteResult.SuccessMessage, SweetAlertIcon.Success);

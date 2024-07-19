@@ -39,7 +39,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Command.Persistence
 
         public async Task UpdateCustomer(Email email, Customer customer)
         {
-            var dbCustomer = await Context.Customers.FirstOrDefaultAsync(c => c.Email.Value == email.Value);
+            Customer? dbCustomer = await Context.Customers.FirstOrDefaultAsync(c => c.Email.Value == email.Value);
             Update(dbCustomer);
         }
     }

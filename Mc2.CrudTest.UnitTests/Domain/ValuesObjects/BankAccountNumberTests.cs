@@ -21,7 +21,7 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             // Arrange
 
             // Act
-            var res = BankAccountNumber.Create(bankAccountNumber);
+            Ardalis.Result.Result<BankAccountNumber> res = BankAccountNumber.Create(bankAccountNumber);
             // Assert
             res.Should().NotBeNull();
             res.IsSuccess.Should().BeTrue();
@@ -39,7 +39,7 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             // Arrange
 
             // Act
-            var res = BankAccountNumber.Create(bankAccoutNumber);
+            Ardalis.Result.Result<BankAccountNumber> res = BankAccountNumber.Create(bankAccoutNumber);
             // Assert
             res.Should().NotBeNull();
             res.IsSuccess.Should().BeFalse();
@@ -59,7 +59,7 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             // Arrange
 
             // Act
-            var res = BankAccountNumber.Create(bankAccountNumber);
+            Ardalis.Result.Result<BankAccountNumber> res = BankAccountNumber.Create(bankAccountNumber);
 
             // Assert
             res.Should().NotBeNull();

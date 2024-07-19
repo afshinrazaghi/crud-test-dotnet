@@ -22,8 +22,8 @@ public sealed record PhoneNumber
 
     public static Result<PhoneNumber> Create(string phoneNumber)
     {
-        var validator = new PhoneNumberValidator();
-        var validationResult = validator.Validate(phoneNumber);
+        PhoneNumberValidator validator = new PhoneNumberValidator();
+        FluentValidation.Results.ValidationResult validationResult = validator.Validate(phoneNumber);
         if (!validationResult.IsValid)
             return Result<PhoneNumber>.Invalid(validationResult.AsErrors());
         return Result<PhoneNumber>.Success(new PhoneNumber(phoneNumber));

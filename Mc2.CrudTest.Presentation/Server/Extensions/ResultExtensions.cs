@@ -18,12 +18,12 @@ namespace Mc2.CrudTest.Presentation.Server.Extensions
 
         private static IActionResult ToHttpNonSuccessResult(this Ardalis.Result.IResult result)
         {
-            var errors = result.Errors.Select(error => new ApiErrorResponse(error)).ToList();
+            List<ApiErrorResponse> errors = result.Errors.Select(error => new ApiErrorResponse(error)).ToList();
 
             switch (result.Status)
             {
                 case ResultStatus.Invalid:
-                    var validationErrors = result
+                    IEnumerable<ApiErrorResponse> validationErrors = result
                         .ValidationErrors
                         .Select(validation => new ApiErrorResponse(validation.ErrorMessage));
 

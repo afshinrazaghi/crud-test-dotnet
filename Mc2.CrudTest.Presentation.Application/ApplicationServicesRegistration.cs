@@ -14,7 +14,7 @@ namespace Mc2.CrudTest.Presentation.Application
     {
         public static IServiceCollection AddApplication(this IServiceCollection services)
         {
-            var assembly = Assembly.GetExecutingAssembly();
+            Assembly assembly = Assembly.GetExecutingAssembly();
 
             services
                 .AddValidatorsFromAssembly(assembly)

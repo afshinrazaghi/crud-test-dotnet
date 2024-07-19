@@ -18,7 +18,7 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             // Arrange
 
             // Act
-            var res = PhoneNumber.Create(phoneNumber);
+            Ardalis.Result.Result<PhoneNumber> res = PhoneNumber.Create(phoneNumber);
 
             // Assert
             res.Should().NotBeNull();
@@ -41,7 +41,7 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             // Arrange
 
             // Act
-            var res = PhoneNumber.Create(phoneNumber);
+            Ardalis.Result.Result<PhoneNumber> res = PhoneNumber.Create(phoneNumber);
 
             // Assert
             res.Should().NotBeNull();

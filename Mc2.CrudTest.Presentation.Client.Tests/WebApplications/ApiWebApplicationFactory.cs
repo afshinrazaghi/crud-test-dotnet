@@ -14,11 +14,11 @@ namespace Mc2.CrudTest.Presentation.Client.Tests.WebApplications
     {
         protected override IHost CreateHost(IHostBuilder builder)
         {
-            var dummyHost = builder.Build();
+            IHost dummyHost = builder.Build();
 
             builder.ConfigureWebHost(webHostBuilder => webHostBuilder.UseKestrel());
 
-            var host = builder.Build();
+            IHost host = builder.Build();
             host.Start();
 
             return dummyHost;

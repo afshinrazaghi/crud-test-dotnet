@@ -11,7 +11,7 @@ namespace Mc2.CrudTest.AcceptanceTests.Helper
     {
         public static IConfiguration GetConfiguration()
         {
-            var builder = new ConfigurationBuilder()
+            IConfigurationBuilder builder = new ConfigurationBuilder()
            .SetBasePath(Directory.GetCurrentDirectory())
            .AddJsonFile("appsettings.test.json", optional: false, reloadOnChange: true);
             return builder.Build();

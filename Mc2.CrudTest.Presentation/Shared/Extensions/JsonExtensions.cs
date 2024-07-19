@@ -40,7 +40,7 @@ internal sealed class PrivateConstructorContractResolver : DefaultJsonTypeInfoRe
 {
     public override JsonTypeInfo GetTypeInfo(Type type, JsonSerializerOptions options)
     {
-        var jsonTypeInfo = base.GetTypeInfo(type, options);
+        JsonTypeInfo jsonTypeInfo = base.GetTypeInfo(type, options);
 
         if (jsonTypeInfo.Kind == JsonTypeInfoKind.Object &&
             jsonTypeInfo.CreateObject is null &&

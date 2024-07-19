@@ -18,10 +18,10 @@ namespace Mc2.CrudTest.UnitTests.Custom
         public void CheckPhoneNumber_WhenCalledWithMobile_ReturnsTrue(string mobileNumber)
         {
             // Arrange
-            var phoneNumberUtil = PhoneNumberUtil.GetInstance();
-            var parsedPhoneNumber = phoneNumberUtil.Parse(mobileNumber, null);
+            PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.GetInstance();
+            PhoneNumbers.PhoneNumber parsedPhoneNumber = phoneNumberUtil.Parse(mobileNumber, null);
             // Act
-            var res = phoneNumberUtil.GetNumberType(parsedPhoneNumber);
+            PhoneNumberType res = phoneNumberUtil.GetNumberType(parsedPhoneNumber);
 
             // Assert
             res.Should().BeOneOf(PhoneNumberType.FIXED_LINE_OR_MOBILE, PhoneNumberType.MOBILE);
@@ -34,10 +34,10 @@ namespace Mc2.CrudTest.UnitTests.Custom
         {
             // Arrange
             string myNumber = "+982188776655";
-            var phoneNumberUtil = PhoneNumberUtil.GetInstance();
-            var parsedPhoneNumber = phoneNumberUtil.Parse(myNumber, "IR");
+            PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.GetInstance();
+            PhoneNumbers.PhoneNumber parsedPhoneNumber = phoneNumberUtil.Parse(myNumber, "IR");
             // Act
-            var res = phoneNumberUtil.GetNumberType(parsedPhoneNumber);
+            PhoneNumberType res = phoneNumberUtil.GetNumberType(parsedPhoneNumber);
 
             // Assert
             res.Should().NotBe(PhoneNumberType.MOBILE);

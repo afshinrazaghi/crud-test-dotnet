@@ -21,7 +21,7 @@ namespace Mc2.CrudTest.AcceptanceTests.Fixtures
 
         public MsSqlFixture()
         {
-            var configuration = ConfigurationHelper.GetConfiguration();
+            IConfiguration configuration = ConfigurationHelper.GetConfiguration();
             string password = configuration.GetSection("MSSqlServer").GetValue<string>("SA_PASSWORD")!;
             int port = configuration.GetSection("MSSqlServer").GetValue<int>("PORT")!;
             Container = new MsSqlBuilder()

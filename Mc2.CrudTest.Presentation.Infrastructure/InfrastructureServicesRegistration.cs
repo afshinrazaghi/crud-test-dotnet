@@ -28,7 +28,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure
     {
         public static IServiceCollection AddInfrastructure(this IServiceCollection services)
         {
-            var assembly = Assembly.GetExecutingAssembly();
+            Assembly assembly = Assembly.GetExecutingAssembly();
 
 
             services.AddValidatorsFromAssembly(assembly);

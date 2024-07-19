@@ -44,7 +44,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Query.Context
         {
             ConnectionString = options.Value.NoSqlConnection;
 
-            var mongoClient = new MongoClient(options.Value.NoSqlConnection);
+            MongoClient mongoClient = new MongoClient(options.Value.NoSqlConnection);
             _database = mongoClient.GetDatabase(DatabaseName);
             _logger = logger;
             _mongoRetryPolicy = CreateRetryPolicy(logger);
@@ -65,10 +65,10 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Query.Context
 
         public async Task CreateCollectionsAsync()
         {
-            using var asyncCursor = await _database.ListCollectionNamesAsync();
-            var collections = await asyncCursor.ToListAsync();
+            using IAsyncCursor<string> asyncCursor = await _database.ListCollectionNamesAsync();
+            List<string> collections = await asyncCursor.ToListAsync();
 
-            foreach (var collectionName in GetCollectionNamesFromAssembly())
+            foreach (string collectionName in GetCollectionNamesFromAssembly())
             {
                 if (!collections.Exists(db => db.Equals(collectionName, StringComparison.InvariantCultureIgnoreCase)))
                 {
@@ -86,11 +86,11 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Query.Context
 
         private async Task CreateIndexAsync()
         {
-            var indexDefinition = Builders<CustomerQueryModel>.IndexKeys.Ascending(model => model.Email);
+            IndexKeysDefinition<CustomerQueryModel> indexDefinition = Builders<CustomerQueryModel>.IndexKeys.Ascending(model => model.Email);
 
-            var indexModel = new CreateIndexModel<CustomerQueryModel>(indexDefinition, DefaultCreateIndexOptions);
+            CreateIndexModel<CustomerQueryModel> indexModel = new CreateIndexModel<CustomerQueryModel>(indexDefinition, DefaultCreateIndexOptions);
 
-            var collection = GetCollection<CustomerQueryModel>();
+            IMongoCollection<CustomerQueryModel> collection = GetCollection<CustomerQueryModel>();
             await collection.Indexes.CreateOneAsync(indexModel);
 
         }
@@ -111,7 +111,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Query.Context
         public async Task UpsertAsync<TQueryModel>(TQueryModel queryModel, Expression<Func<TQueryModel, bool>> upsertFilter)
             where TQueryModel : IQueryModel
         {
-            var collection = GetCollection<TQueryModel>();
+            IMongoCollection<TQueryModel> collection = GetCollection<TQueryModel>();
             await _mongoRetryPolicy.ExecuteAsync(async () =>
                 await collection.ReplaceOneAsync(upsertFilter, queryModel, DefaultReplaceOptions));
 
@@ -121,7 +121,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Query.Context
         public async Task DeleteAsync<TQueryModel>(Expression<Func<TQueryModel, bool>> deleteFilter)
             where TQueryModel : IQueryModel
         {
-            var collection = GetCollection<TQueryModel>();
+            IMongoCollection<TQueryModel> collection = GetCollection<TQueryModel>();
             await _mongoRetryPolicy.ExecuteAsync(async () =>
                 await collection.DeleteOneAsync(deleteFilter));
         }
@@ -137,7 +137,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Query.Context
 
             TimeSpan SleepDurationProvider(int retryAttempt)
             {
-                var sleepDuration =
+                TimeSpan sleepDuration =
                     TimeSpan.FromSeconds(Math.Pow(2, retryAttempt)) + TimeSpan.FromMicroseconds(Random.Shared.Next(0, 1000));
 
                 logger.LogInformation("----- MongoDB: Retry #{Count} with delay {Delay}", retryAttempt, sleepDuration);

@@ -20,7 +20,7 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             // Arrange
 
             // Act
-            var res = Email.Create(email);
+            Ardalis.Result.Result<Email> res = Email.Create(email);
             // Assert
 
             res.Should().NotBeNull();
@@ -40,7 +40,7 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             // Arrange
 
             // Act
-            var res = Email.Create(email);
+            Ardalis.Result.Result<Email> res = Email.Create(email);
             // Assert
             res.Should().NotBeNull();
             res.IsSuccess.Should().BeFalse();
@@ -59,7 +59,7 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             // Arrange
 
             // Act
-            var res = Email.Create(email);
+            Ardalis.Result.Result<Email> res = Email.Create(email);
             // Assert
             res.Should().NotBeNull();
             res.IsSuccess.Should().BeFalse();

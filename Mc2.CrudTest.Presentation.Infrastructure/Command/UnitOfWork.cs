@@ -30,19 +30,19 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Command
 
         public async Task SaveChangesAsync()
         {
-            var strategy = _writeDbContext.Database.CreateExecutionStrategy();
+            Microsoft.EntityFrameworkCore.Storage.IExecutionStrategy strategy = _writeDbContext.Database.CreateExecutionStrategy();
 
             await strategy.ExecuteAsync(async () =>
             {
-                await using var transaction = await _writeDbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
+                await using Microsoft.EntityFrameworkCore.Storage.IDbContextTransaction transaction = await _writeDbContext.Database.BeginTransactionAsync(IsolationLevel.ReadCommitted);
 
                 _logger.LogInformation("----- Begin transaction: '{TransactionId}'", transaction.TransactionId);
 
                 try
                 {
-                    var (domainEvents, eventStores) = BeforeSaveChanges();
+                    (IReadOnlyList<BaseEvent> domainEvents, IReadOnlyList<EventStore> eventStores) = BeforeSaveChanges();
 
-                    var rowsAffected = await _writeDbContext.SaveChangesAsync();
+                    int rowsAffected = await _writeDbContext.SaveChangesAsync();
 
                     _logger.LogInformation("----- Commit transaction: '{TransactionId}'", transaction.TransactionId);
                     await transaction.CommitAsync();
@@ -70,17 +70,17 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Command
 
         private (IReadOnlyList<BaseEvent> domainEvents, IReadOnlyList<EventStore> eventStores) BeforeSaveChanges()
         {
-            var domainEntities = _writeDbContext
+            List<Microsoft.EntityFrameworkCore.ChangeTracking.EntityEntry<BaseEntity>> domainEntities = _writeDbContext
                 .ChangeTracker
                 .Entries<BaseEntity>()
                 .Where(entry => entry.Entity.DomainEvents.Any())
                 .ToList();
 
-            var domainEvents = domainEntities
+            List<BaseEvent> domainEvents = domainEntities
                 .SelectMany(entry => entry.Entity.DomainEvents)
                 .ToList();
 
-            var eventStores = domainEvents
+            List<EventStore> eventStores = domainEvents
                 .ConvertAll(@event => new EventStore(@event.AggregateId, @event.GetGenericTypeName(), @event.ToJson()));
 
             domainEntities.ForEach(entry => entry.Entity.ClearDomainEvents());
@@ -96,7 +96,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Command
                 return;
 
 
-            var tasks = domainEvents
+            List<Task> tasks = domainEvents
                 .AsParallel()
                 .Select(@event => _mediator.Publish(@event))
                 .ToList();

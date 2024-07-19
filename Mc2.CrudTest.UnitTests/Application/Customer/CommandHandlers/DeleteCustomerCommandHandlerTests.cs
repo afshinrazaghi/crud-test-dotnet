@@ -33,7 +33,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         public async void Handle_WhenCalledWithValidCustomer_ReturnsSuccess()
         {
             // Arrange
-            var customer = new Faker<Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate.Customer>()
+            Presentation.Domain.Entities.CustomerAggregate.Customer customer = new Faker<Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate.Customer>()
                  .CustomInstantiator(faker => CustomerFactory.Create(
                    faker.Person.FirstName,
                    faker.Person.LastName,
@@ -43,28 +43,28 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
                    BankAccountNumberFixture.Generate()
                )).Generate();
 
-            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(_fixture.Context);
             repository.Add(customer);
 
             await _fixture.Context.SaveChangesAsync();
             _fixture.Context.ChangeTracker.Clear();
 
-            var unitOfWork = new UnitOfWork(
+            UnitOfWork unitOfWork = new UnitOfWork(
                     _fixture.Context,
                     Substitute.For<IEventStoreRepository>(),
                     Substitute.For<IMediator>(),
                     Substitute.For<ILogger<UnitOfWork>>());
 
-            var handler = new DeleteCustomerCommandHandler(
+            DeleteCustomerCommandHandler handler = new DeleteCustomerCommandHandler(
                 validator,
                 repository,
                 unitOfWork);
 
-            var command = new DeleteCustomerCommand() { Email = customer.Email.Value };
+            DeleteCustomerCommand command = new DeleteCustomerCommand() { Email = customer.Email.Value };
 
             // Act
 
-            var res = await handler.Handle(command, CancellationToken.None);
+            Ardalis.Result.Result res = await handler.Handle(command, CancellationToken.None);
 
             // Assert
             res.Should().NotBeNull();
@@ -76,9 +76,9 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         public async void Handle_WhenNotFound_ReturnsFail()
         {
             // Arrange
-            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
-            var command = new DeleteCustomerCommand("test@gmail.com");
-            var handler = new DeleteCustomerCommandHandler(
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            DeleteCustomerCommand command = new DeleteCustomerCommand("test@gmail.com");
+            DeleteCustomerCommandHandler handler = new DeleteCustomerCommandHandler(
                 validator,
                 repository,
                 Substitute.For<IUnitOfWork>()
@@ -86,7 +86,7 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
 
 
             // Act
-            var res = await handler.Handle(command, CancellationToken.None);
+            Ardalis.Result.Result res = await handler.Handle(command, CancellationToken.None);
 
             // Assert
 
@@ -103,14 +103,14 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         {
             // Arrange
 
-            var handler = new DeleteCustomerCommandHandler(
+            DeleteCustomerCommandHandler handler = new DeleteCustomerCommandHandler(
                 validator,
                 Substitute.For<ICustomerWriteOnlyRepository>(),
                 Substitute.For<IUnitOfWork>()
             );
 
             // Act
-            var res = await handler.Handle(new DeleteCustomerCommand(), CancellationToken.None);
+            Ardalis.Result.Result res = await handler.Handle(new DeleteCustomerCommand(), CancellationToken.None);
 
             // Assert
             res.Should().NotBeNull();

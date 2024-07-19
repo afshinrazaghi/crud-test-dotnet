@@ -30,23 +30,23 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandle
 
         public async Task<Result> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+            FluentValidation.Results.ValidationResult validationResult = await _validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
                 return Result.Invalid(validationResult.AsErrors());
 
-            var customer = await _repository.GetByEmailAsync(Email.Create(request.OriginalEmail).Value);
+            Customer? customer = await _repository.GetByEmailAsync(Email.Create(request.OriginalEmail).Value);
             if (customer == null)
                 return Result.NotFound($"No customer found by Email : {request.OriginalEmail}");
 
-            var phoneNumberResult = PhoneNumber.Create(request.PhoneNumber);
+            Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(request.PhoneNumber);
             if (!phoneNumberResult.IsSuccess)
                 return Result.Error(new ErrorList(phoneNumberResult.Errors.ToArray()));
 
-            var emailResult = Email.Create(request.Email);
+            Result<Email> emailResult = Email.Create(request.Email);
             if (!emailResult.IsSuccess)
                 return Result.Error(new ErrorList(emailResult.Errors.ToArray()));
 
-            var bankAccountNumberResult = BankAccountNumber.Create(request.BankAccountNumber);
+            Result<BankAccountNumber> bankAccountNumberResult = BankAccountNumber.Create(request.BankAccountNumber);
             if (!bankAccountNumberResult.IsSuccess)
                 return Result.Error(new ErrorList(bankAccountNumberResult.Errors.ToArray()));
 
