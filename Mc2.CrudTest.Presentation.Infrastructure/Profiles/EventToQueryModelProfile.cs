@@ -15,6 +15,12 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Profiles
         {
             CreateMap<CustomerCreatedEvent, CustomerQueryModel>(MemberList.Destination)
                 .ConstructUsing(@event => CreateCustomerQueryModel(@event));
+
+            CreateMap<CustomerUpdatedEvent, CustomerQueryModel>(MemberList.Destination)
+                .ConstructUsing(@event => CreateCustomerQueryModel(@event));
+
+            CreateMap<CustomerDeletedEvent, CustomerQueryModel>(MemberList.Destination)
+                .ConstructUsing(@event => CreateCustomerQueryModel(@event));
         }
 
 

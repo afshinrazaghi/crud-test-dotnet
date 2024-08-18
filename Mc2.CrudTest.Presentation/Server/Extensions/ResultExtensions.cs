@@ -1,5 +1,5 @@
 ﻿using Ardalis.Result;
-using Mc2.CrudTest.Presentation.Server.Models;
+using Mc2.CrudTest.Presentation.Shared.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace Mc2.CrudTest.Presentation.Server.Extensions
@@ -18,16 +18,16 @@ namespace Mc2.CrudTest.Presentation.Server.Extensions
 
         private static IActionResult ToHttpNonSuccessResult(this Ardalis.Result.IResult result)
         {
-            var errors = result.Errors.Select(error => new ApiErrorResponse(error)).ToList();
+            List<ApiErrorResponse> errors = result.Errors.Select(error => new ApiErrorResponse(error)).ToList();
 
             switch (result.Status)
             {
                 case ResultStatus.Invalid:
-                    var validationErrors = result
+                    IEnumerable<ApiErrorResponse> validationErrors = result
                         .ValidationErrors
                         .Select(validation => new ApiErrorResponse(validation.ErrorMessage));
 
-                    return new BadRequestObjectResult(ApiResponse.BadRequest(errors));
+                    return new BadRequestObjectResult(ApiResponse.BadRequest(validationErrors));
 
                 case ResultStatus.NotFound:
                     return new NotFoundObjectResult(ApiResponse.NotFound(errors));

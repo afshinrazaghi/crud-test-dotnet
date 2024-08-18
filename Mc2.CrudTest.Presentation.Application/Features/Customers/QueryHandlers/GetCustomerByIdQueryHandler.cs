@@ -25,14 +25,14 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.QueryHandlers
 
         public async Task<Result<CustomerQueryModel>> Handle(GetCustomerByIdQuery request, CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+            FluentValidation.Results.ValidationResult validationResult = await _validator.ValidateAsync(request, cancellationToken);
 
             if (!validationResult.IsValid)
             {
                 return Result<CustomerQueryModel>.Invalid(validationResult.AsErrors());
             }
 
-            var customer = await _customerRepository.GetByIdAsync(request.Id);
+            CustomerQueryModel customer = await _customerRepository.GetByIdAsync(request.Id);
 
             return customer == null
                 ? Result<CustomerQueryModel>.NotFound($"No customer found by Id : {request.Id}")

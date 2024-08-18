@@ -30,35 +30,38 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandle
 
         public async Task<Result> Handle(UpdateCustomerCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+            FluentValidation.Results.ValidationResult validationResult = await _validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
                 return Result.Invalid(validationResult.AsErrors());
 
-            var customer = await _repository.GetByIdAsync(request.Id);
+            Customer? customer = await _repository.GetByEmailAsync(Email.Create(request.OriginalEmail).Value);
             if (customer == null)
-                return Result.NotFound($"No customer found by Id : {request.Id}");
+                return Result.NotFound($"No customer found by Email : {request.OriginalEmail}");
 
-            var phoneNumberResult = PhoneNumber.Create(request.PhoneNumber);
+            Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(request.PhoneNumber);
             if (!phoneNumberResult.IsSuccess)
                 return Result.Error(new ErrorList(phoneNumberResult.Errors.ToArray()));
 
-            var emailResult = Email.Create(request.Email);
+            Result<Email> emailResult = Email.Create(request.Email);
             if (!emailResult.IsSuccess)
                 return Result.Error(new ErrorList(emailResult.Errors.ToArray()));
 
-            var bankAccountNumberResult = BankAccountNumber.Create(request.BankAccountNumber);
+            Result<BankAccountNumber> bankAccountNumberResult = BankAccountNumber.Create(request.BankAccountNumber);
             if (!bankAccountNumberResult.IsSuccess)
                 return Result.Error(new ErrorList(bankAccountNumberResult.Errors.ToArray()));
 
-            if (await _repository.ExistsByEmailAsync(emailResult.Value, customer.Id))
-                return Result.Error("email already exists");
+            if (request.OriginalEmail != request.Email)
+            {
+                if (await _repository.ExistsByEmailAsync(emailResult.Value))
+                    return Result.Error("email already exists");
+            }
 
-            if (await _repository.ExistsAsync(request.FirstName, request.LastName, request.DateOfBirth, customer.Id))
+            if (await _repository.ExistsAsync(request.FirstName, request.LastName, request.DateOfBirth, Email.Create(request.OriginalEmail).Value))
                 return Result.Error("customer with target info already exists");
 
             customer.ChangeDetail(request.FirstName, request.LastName, request.DateOfBirth, phoneNumberResult.Value, emailResult.Value, bankAccountNumberResult.Value);
 
-            _repository.Update(customer);
+            await _repository.UpdateCustomer(Email.Create(request.OriginalEmail).Value, customer);
             await _unitOfWork.SaveChangesAsync();
 
             return Result.SuccessWithMessage("Updated successfully!");

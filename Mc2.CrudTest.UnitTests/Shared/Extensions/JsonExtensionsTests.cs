@@ -18,10 +18,10 @@ namespace Mc2.CrudTest.UnitTests.Shared.Extensions
         public void FromJson_WhenCalled_ReturnSerialized()
         {
             // Arrange
-            var user = new User("afshin.razaghi", "afshin.razaghi.net@gmail.com", EStatus.Active);
+            User user = new User("afshin.razaghi", "afshin.razaghi.net@gmail.com", EStatus.Active);
 
             // Act
-            var res = user.ToJson();
+            string res = user.ToJson();
 
             // Assert
             res.Should().NotBeNullOrEmpty().And.BeEquivalentTo(UserJson);
@@ -31,9 +31,9 @@ namespace Mc2.CrudTest.UnitTests.Shared.Extensions
         public void FromJson_WhenCalled_ReturnDeserializeTyped()
         {
             // Arrange
-            var expectedUser = new User("afshin.razaghi", "afshin.razaghi.net@gmail.com", EStatus.Active);
+            User expectedUser = new User("afshin.razaghi", "afshin.razaghi.net@gmail.com", EStatus.Active);
             // Act
-            var res = UserJson.FromJson<User>();
+            User res = UserJson.FromJson<User>();
             // Assert
             res.Should().NotBeNull().And.BeEquivalentTo(expectedUser);
             res.UserName.Should().NotBeNullOrWhiteSpace();
@@ -48,7 +48,7 @@ namespace Mc2.CrudTest.UnitTests.Shared.Extensions
             User? user = null;
 
             // Act
-            var res = user.ToJson();
+            string res = user.ToJson();
 
             // Assert
             res.Should().BeNull();
@@ -61,7 +61,7 @@ namespace Mc2.CrudTest.UnitTests.Shared.Extensions
             const string? userJson = null;
 
             // Act
-            var res = userJson.FromJson<User>();
+            User res = userJson.FromJson<User>();
 
             // Assert
             res.Should().BeNull();

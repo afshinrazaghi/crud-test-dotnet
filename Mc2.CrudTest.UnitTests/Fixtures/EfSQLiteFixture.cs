@@ -18,9 +18,9 @@ namespace Mc2.CrudTest.UnitTests.Fixtures
             _connection = new SqliteConnection(ConnectionString);
             _connection.Open();
 
-            var builer = new DbContextOptionsBuilder<WriteDbContext>()
+            DbContextOptionsBuilder<WriteDbContext> buidler = new DbContextOptionsBuilder<WriteDbContext>()
                 .UseSqlite(_connection);
-            Context = new WriteDbContext(builer.Options);
+            Context = new WriteDbContext(buidler.Options);
         }
 
 

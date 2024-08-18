@@ -20,17 +20,24 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Query.Persistence
 
         public async Task<IEnumerable<CustomerQueryModel>> GetAllAsync()
         {
-            var sort = Builders<CustomerQueryModel>.Sort
+            SortDefinition<CustomerQueryModel> sort = Builders<CustomerQueryModel>.Sort
                 .Ascending(customer => customer.FirstName)
                 .Descending(customer => customer.DateOfBirth);
 
-            var findOptions = new FindOptions<CustomerQueryModel>
+            FindOptions<CustomerQueryModel> findOptions = new FindOptions<CustomerQueryModel>
             {
                 Sort = sort
             };
 
-            using var asyncCursor = await Collection.FindAsync(Builders<CustomerQueryModel>.Filter.Empty, findOptions);
+            using IAsyncCursor<CustomerQueryModel> asyncCursor = await Collection.FindAsync(Builders<CustomerQueryModel>.Filter.Empty, findOptions);
             return await asyncCursor.ToListAsync();
+        }
+
+        public async Task<CustomerQueryModel?> GetByEmailAsync(string email)
+        {
+
+            using IAsyncCursor<CustomerQueryModel> asyncCursor = await Collection.FindAsync(Builders<CustomerQueryModel>.Filter.Eq(x => x.Email, email));
+            return await asyncCursor.FirstOrDefaultAsync();
         }
 
 

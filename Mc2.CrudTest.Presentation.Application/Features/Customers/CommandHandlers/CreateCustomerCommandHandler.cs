@@ -31,15 +31,34 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandle
 
         public async Task<Result<CreatedCustomerResponse>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+            FluentValidation.Results.ValidationResult validationResult = await _validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
                 return Result<CreatedCustomerResponse>.Invalid(validationResult.AsErrors());
             }
 
-            var phoneNumber = PhoneNumber.Create(request.PhoneNumber).Value;
-            var email = Email.Create(request.Email).Value;
-            var bankAccountNumber = BankAccountNumber.Create(request.BankAccountNumber).Value;
+            PhoneNumber phoneNumber;
+            Email email;
+            BankAccountNumber bankAccountNumber;
+
+            Result<PhoneNumber> phoneNumberCreateResult = PhoneNumber.Create(request.PhoneNumber);
+            if (phoneNumberCreateResult.IsSuccess)
+                phoneNumber = phoneNumberCreateResult.Value;
+            else
+                return Result<CreatedCustomerResponse>.Invalid(phoneNumberCreateResult.ValidationErrors);
+
+            Result<Email> emailCreateResult = Email.Create(request.Email);
+            if (emailCreateResult.IsSuccess)
+                email = emailCreateResult.Value;
+            else
+                return Result<CreatedCustomerResponse>.Invalid(emailCreateResult.ValidationErrors);
+
+            Result<BankAccountNumber> bankAccountNumberCreateResult = BankAccountNumber.Create(request.BankAccountNumber);
+            if (bankAccountNumberCreateResult.IsSuccess)
+                bankAccountNumber = bankAccountNumberCreateResult.Value;
+            else
+                return Result<CreatedCustomerResponse>.Invalid(bankAccountNumberCreateResult.ValidationErrors);
+
 
             if (await _repository.ExistsByEmailAsync(email))
                 return Result<CreatedCustomerResponse>.Error("email already exists");
@@ -47,7 +66,7 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandle
             if (await _repository.ExistsAsync(request.FirstName, request.LastName, request.DateOfBirth))
                 return Result<CreatedCustomerResponse>.Error("customer already registered");
 
-            var customer = CustomerFactory.Create(
+            Customer customer = CustomerFactory.Create(
                 request.FirstName,
                 request.LastName,
                 request.DateOfBirth,

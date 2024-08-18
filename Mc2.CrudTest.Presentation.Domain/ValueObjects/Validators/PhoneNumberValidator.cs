@@ -11,13 +11,13 @@ public class PhoneNumberValidator : AbstractValidator<string>
 {
     public PhoneNumberValidator()
     {
-        var phoneNumberUtil = PhoneNumberUtil.GetInstance();
+        PhoneNumberUtil phoneNumberUtil = PhoneNumberUtil.GetInstance();
         RuleFor(phoneNumber => phoneNumber)
             .Must(phoneNumber =>
             {
                 try
                 {
-                    var parsedPhoneNumber = phoneNumberUtil.Parse(phoneNumber, "NL");
+                    PhoneNumbers.PhoneNumber parsedPhoneNumber = phoneNumberUtil.Parse(phoneNumber, null);
                     return phoneNumberUtil.IsValidNumber(parsedPhoneNumber);
                 }
                 catch

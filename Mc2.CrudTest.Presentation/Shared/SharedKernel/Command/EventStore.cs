@@ -20,8 +20,8 @@ namespace Mc2.CrudTest.Presentation.Shared.SharedKernel.Command
 
         }
 
-        public Guid Id { get; private set; } = Guid.NewGuid();
+        public Guid Id { get; private init; } = Guid.NewGuid();
 
-        public string Data { get; private set; }
+        public string Data { get; private init; }
     }
 }

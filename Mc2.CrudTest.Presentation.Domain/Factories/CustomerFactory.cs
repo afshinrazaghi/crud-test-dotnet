@@ -14,15 +14,15 @@ namespace Mc2.CrudTest.Presentation.Domain.Factories
         public static Result<Customer> Create(string firstName, string lastName, DateTime dateOfBirth,
             string phoneNumber, string email, string bankAccountNumber)
         {
-            var phoneNumberResult = PhoneNumber.Create(phoneNumber);
+            Result<PhoneNumber> phoneNumberResult = PhoneNumber.Create(phoneNumber);
             if (!phoneNumberResult.IsSuccess)
                 return Result<Customer>.Error(new ErrorList(phoneNumberResult.Errors));
 
-            var emailResult = Email.Create(email);
+            Result<Email> emailResult = Email.Create(email);
             if (!emailResult.IsSuccess)
                 return Result<Customer>.Error(new ErrorList(emailResult.Errors));
 
-            var bankAccountNumberResult = BankAccountNumber.Create(bankAccountNumber);
+            Result<BankAccountNumber> bankAccountNumberResult = BankAccountNumber.Create(bankAccountNumber);
             if (!bankAccountNumberResult.IsSuccess)
                 return Result<Customer>.Error(new ErrorList(bankAccountNumberResult.Errors));
 

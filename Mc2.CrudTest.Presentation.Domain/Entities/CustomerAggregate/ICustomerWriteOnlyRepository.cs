@@ -14,5 +14,8 @@ namespace Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate
         Task<bool> ExistsByEmailAsync(Email email, Guid currentId);
         Task<bool> ExistsAsync(string firstName, string lastName, DateTime dateOfBirth);
         Task<bool> ExistsAsync(string firstName, string lastName, DateTime dateOfBirth, Guid currentId);
+        Task<bool> ExistsAsync(string firstName, string lastName, DateTime dateOfBirth, Email currentEmail);
+        Task<Customer?> GetByEmailAsync(Email email);
+        Task UpdateCustomer(Email email, Customer customer);
     }
 }

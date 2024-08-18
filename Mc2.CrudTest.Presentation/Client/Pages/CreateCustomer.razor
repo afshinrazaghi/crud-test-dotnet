@@ -1,0 +1,86 @@
+﻿@page "/createCustomer"
+@using System.Net.Http
+@using System.Net.Http.Json
+@inject HttpClient Http
+@using Mc2.CrudTest.Presentation.Application.Features.Customers.Commands;
+@using Mc2.CrudTest.Presentation.Application.Features.Customers.Responses
+@using Mc2.CrudTest.Presentation.Shared.Extensions;
+@using Mc2.CrudTest.Presentation.Shared.Models
+@using Blazored.Toast.Services;
+@inject NavigationManager navigationManager
+@inject IToastService toastService;
+
+<div>
+    <h1>Add New Customer</h1>
+    <br />
+    <EditForm Model="@FormData" OnValidSubmit="HandleValidSubmit">
+        <DataAnnotationsValidator />
+        <ValidationSummary />
+
+        <div class="form-group">
+            <label for="firstName">First Name</label>
+            <InputText id="firstName" DisplayName="firstName" name="firstName" class="form-control" @bind-Value="FormData.FirstName" />
+        </div>
+        <div class="form-group">
+            <label for="lastName">Last Name</label>
+            <InputText id="lastName" DisplayName="lastName" name="lastName" class="form-control" @bind-Value="FormData.LastName" />
+        </div>
+        <div class="form-group">
+            <label for="email">Email</label>
+            <InputText id="email" DisplayName="email" name="email" class="form-control" @bind-Value="FormData.Email" />
+        </div>
+        <div class="form-group">
+            <label for="phoneNumber">Phone Number</label>
+            <InputText id="phoneNumber" DisplayName="phoneNumber" name="phoneNumber" class="form-control" @bind-Value="FormData.PhoneNumber" />
+        </div>
+        <div class="form-group">
+            <lable for="bankAccountNumber">Bank Account Number</lable>
+            <InputText id="bankAccountNumber" DisplayName="bankAccountNumber" name="bankAccountNumber" class="form-control" @bind-Value="FormData.BankAccountNumber" />
+        </div>
+        <div class="form-group">
+            <label for="dateOfBirth">Date Of Birth</label>
+            <InputDate id="dateOfBirth" DisplayName="dateOfBirth" name="dateOfBirth" class="form-control" @bind-Value="FormData.DateOfBirth" />
+        </div>
+        <div class="mt-2 mb-2">
+            <button type="submit" class="btn btn-primary mr-2">Add Customer</button>
+            <button type="button" class="btn btn-danger" @onclick="NavigateBack">
+                <span class="oi oi-caret-left"> Return Back </span>
+            </button>
+        </div>
+    </EditForm>
+</div>
+
+@code {
+
+    [Parameter]
+    public string? CustomerEmail { get; set; }
+
+    private CreateCustomerCommand FormData = new CreateCustomerCommand();
+
+    private async Task HandleValidSubmit()
+    {
+        try
+        {
+            HttpResponseMessage response = await Http.PostAsJsonAsync<CreateCustomerCommand>(Program.EndPoint, FormData);
+            ApiResponse<CreatedCustomerResponse> result = (await response.Content.ReadAsStringAsync()).FromJson<ApiResponse<CreatedCustomerResponse>>();
+            if (result.Success)
+            {
+                toastService.ShowSuccess(result.SuccessMessage ?? "Customer Created successfully!");
+                navigationManager.NavigateTo("/customers");
+            }
+            else
+            {
+                toastService.ShowError(string.Join("\r\n", result.Errors.Select(x => x.Message)));
+            }
+        }
+        catch (Exception ex)
+        {
+            toastService.ShowError(ex.ToString());
+        }
+    }
+
+    private void NavigateBack()
+    {
+        navigationManager.NavigateTo("/customers");
+    }
+}

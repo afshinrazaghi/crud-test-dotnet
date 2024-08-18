@@ -20,7 +20,7 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             // Arrange
 
             // Act
-            var res = Email.Create(email);
+            Ardalis.Result.Result<Email> res = Email.Create(email);
             // Assert
 
             res.Should().NotBeNull();
@@ -40,15 +40,15 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             // Arrange
 
             // Act
-            var res = Email.Create(email);
+            Ardalis.Result.Result<Email> res = Email.Create(email);
             // Assert
             res.Should().NotBeNull();
             res.IsSuccess.Should().BeFalse();
             res.Value.Should().BeNull();
-            res.Errors.Should().NotBeNullOrEmpty()
+            res.ValidationErrors.Should().NotBeNullOrEmpty()
                 .And.OnlyHaveUniqueItems()
                 .And.HaveCount(1)
-                .And.Satisfy(errorMessage => errorMessage == "Email is not valid");
+                .And.Satisfy(errorMessage => errorMessage.ErrorMessage == "Email is not valid");
         }
 
         [Theory]
@@ -59,15 +59,15 @@ namespace Mc2.CrudTest.UnitTests.Domain.ValuesObjects
             // Arrange
 
             // Act
-            var res = Email.Create(email);
+            Ardalis.Result.Result<Email> res = Email.Create(email);
             // Assert
             res.Should().NotBeNull();
             res.IsSuccess.Should().BeFalse();
             res.Value.Should().BeNull();
-            res.Errors.Should().NotBeNullOrEmpty()
+            res.ValidationErrors.Should().NotBeNullOrEmpty()
                 .And.OnlyHaveUniqueItems()
                 .And.HaveCount(1)
-                .And.Satisfy(errorMessage => errorMessage == "Email cannot be empty");
+                .And.Satisfy(errorMessage => errorMessage.ErrorMessage == "Email cannot be empty");
         }
 
 

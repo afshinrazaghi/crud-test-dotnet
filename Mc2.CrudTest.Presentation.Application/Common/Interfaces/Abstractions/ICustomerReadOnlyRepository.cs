@@ -11,6 +11,7 @@ namespace Mc2.CrudTest.Presentation.Application.Common.Interfaces.Abstractions
     public interface ICustomerReadOnlyRepository : IReadOnlyRepository<CustomerQueryModel, Guid>
     {
         Task<IEnumerable<CustomerQueryModel>> GetAllAsync();
+        Task<CustomerQueryModel?> GetByEmailAsync(string email);
     }
 
 

@@ -12,13 +12,13 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Command.Extensions
 
         internal static void RemoveCascadeDeleteConvention(this ModelBuilder modelBuilder)
         {
-            var foreignKeys = modelBuilder.Model
+            List<Microsoft.EntityFrameworkCore.Metadata.IMutableForeignKey> foreignKeys = modelBuilder.Model
                 .GetEntityTypes()
                 .SelectMany(entity => entity.GetForeignKeys())
                 .Where(fk => !fk.IsOwnership && fk.DeleteBehavior == DeleteBehavior.Cascade)
                 .ToList();
 
-            foreach (var fk in foreignKeys)
+            foreach (Microsoft.EntityFrameworkCore.Metadata.IMutableForeignKey fk in foreignKeys)
                 fk.DeleteBehavior = DeleteBehavior.Restrict;
         }
     }

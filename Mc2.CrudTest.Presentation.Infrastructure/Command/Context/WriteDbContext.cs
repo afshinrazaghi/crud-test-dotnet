@@ -21,7 +21,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Command.Context
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
-            modelBuilder.Entity<Customer>().ToTable("Customers");
+            //modelBuilder.Entity<Customer>().ToTable("Customers");
             modelBuilder.ApplyConfiguration(new CustomerConfiguration());
         }
     }

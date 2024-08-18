@@ -15,8 +15,10 @@ namespace Mc2.CrudTest.Presentation.Domain.ValueObjects.Validators
                 .NotEmpty()
                 .WithMessage("Email cannot be empty");
 
-            RuleFor(email => email).EmailAddress()
+            When(email => !string.IsNullOrEmpty(email) && !string.IsNullOrWhiteSpace(email), () => {
+                RuleFor(email => email).EmailAddress()
                 .WithMessage("Email is not valid");
+            });
         }
     }
 }

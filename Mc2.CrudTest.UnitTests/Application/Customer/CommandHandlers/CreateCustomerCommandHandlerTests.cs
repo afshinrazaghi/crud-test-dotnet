@@ -34,29 +34,29 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         public async void Handle_WhenCalledWithValidData_ReturnsSuccess()
         {
             // Arrange
-            var command = new Faker<CreateCustomerCommand>("nl")
+            CreateCustomerCommand command = new Faker<CreateCustomerCommand>("nl")
                 .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(command => command.LastName, faker => faker.Person.LastName)
                 .RuleFor(command => command.DateOfBirth, faker => faker.Person.DateOfBirth)
-                .RuleFor(command => command.PhoneNumber, faker => faker.Random.Number(100000000, 999999999).ToString())
+                .RuleFor(command => command.PhoneNumber, faker => PhoneNumberFixture.Generate())
                 .RuleFor(command => command.Email, faker => faker.Person.Email)
                 .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                 .Generate();
 
-            var unitOfWork = new UnitOfWork(
+            UnitOfWork unitOfWork = new UnitOfWork(
                 _fixture.Context,
                 Substitute.For<IEventStoreRepository>(),
                 Substitute.For<IMediator>(),
                 Substitute.For<ILogger<UnitOfWork>>());
 
-            var handler = new CreateCustomerCommandHandler(
+            CreateCustomerCommandHandler handler = new CreateCustomerCommandHandler(
                 _validator,
                 new CustomerWriteOnlyRepository(_fixture.Context),
                 unitOfWork);
 
 
             // Act
-            var res = await handler.Handle(command, CancellationToken.None);
+            Ardalis.Result.Result<Presentation.Application.Features.Customers.Responses.CreatedCustomerResponse> res = await handler.Handle(command, CancellationToken.None);
 
             // Assert
             res.Should().NotBeNull();
@@ -71,16 +71,16 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         {
             // Arrange
 
-            var command = new Faker<CreateCustomerCommand>("nl")
+            CreateCustomerCommand command = new Faker<CreateCustomerCommand>("nl")
                .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
                .RuleFor(command => command.LastName, faker => faker.Person.LastName)
                .RuleFor(command => command.DateOfBirth, faker => faker.Person.DateOfBirth)
-               .RuleFor(command => command.PhoneNumber, faker => faker.Random.Number(100000000, 999999999).ToString())
+               .RuleFor(command => command.PhoneNumber, faker => PhoneNumberFixture.Generate())
                .RuleFor(command => command.Email, faker => faker.Person.Email)
                .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                .Generate();
 
-            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(_fixture.Context);
             repository.Add(CustomerFactory.Create(
                 command.FirstName,
                 command.LastName,
@@ -93,13 +93,13 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
             await _fixture.Context.SaveChangesAsync();
             _fixture.Context.ChangeTracker.Clear();
 
-            var handler = new CreateCustomerCommandHandler(
+            CreateCustomerCommandHandler handler = new CreateCustomerCommandHandler(
                 _validator,
                 repository,
                 Substitute.For<IUnitOfWork>());
 
             // Act
-            var res = await handler.Handle(command, CancellationToken.None);
+            Ardalis.Result.Result<Presentation.Application.Features.Customers.Responses.CreatedCustomerResponse> res = await handler.Handle(command, CancellationToken.None);
 
             // Assert
             res.Should().NotBeNull();
@@ -115,16 +115,16 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         {
             // Arrange
 
-            var command = new Faker<CreateCustomerCommand>("nl")
+            CreateCustomerCommand command = new Faker<CreateCustomerCommand>("nl")
                .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
                .RuleFor(command => command.LastName, faker => faker.Person.LastName)
                .RuleFor(command => command.DateOfBirth, faker => faker.Person.DateOfBirth)
-               .RuleFor(command => command.PhoneNumber, faker => faker.Random.Number(100000000, 999999999).ToString())
+               .RuleFor(command => command.PhoneNumber, faker => PhoneNumberFixture.Generate())
                .RuleFor(command => command.Email, faker => faker.Person.Email)
                .RuleFor(command => command.BankAccountNumber, faker => BankAccountNumberFixture.Generate())
                .Generate();
 
-            var repository = new CustomerWriteOnlyRepository(_fixture.Context);
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(_fixture.Context);
             repository.Add(CustomerFactory.Create(
                 command.FirstName,
                 command.LastName,
@@ -137,13 +137,13 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
             await _fixture.Context.SaveChangesAsync();
             _fixture.Context.ChangeTracker.Clear();
 
-            var handler = new CreateCustomerCommandHandler(
+            CreateCustomerCommandHandler handler = new CreateCustomerCommandHandler(
                 _validator,
                 repository,
                 Substitute.For<IUnitOfWork>());
 
             // Act
-            var res = await handler.Handle(command, CancellationToken.None);
+            Ardalis.Result.Result<Presentation.Application.Features.Customers.Responses.CreatedCustomerResponse> res = await handler.Handle(command, CancellationToken.None);
 
             // Assert
             res.Should().NotBeNull();
@@ -158,13 +158,13 @@ namespace Mc2.CrudTest.UnitTests.Application.Customer.CommandHandlers
         public async void Handle_WhenCommandIsInvalid_ReturnsFail()
         {
             // Arrange
-            var handler = new CreateCustomerCommandHandler(
+            CreateCustomerCommandHandler handler = new CreateCustomerCommandHandler(
                 _validator,
                 Substitute.For<ICustomerWriteOnlyRepository>(),
                 Substitute.For<IUnitOfWork>());
 
             // Act
-            var res = await handler.Handle(new CreateCustomerCommand(), CancellationToken.None);
+            Ardalis.Result.Result<Presentation.Application.Features.Customers.Responses.CreatedCustomerResponse> res = await handler.Handle(new CreateCustomerCommand(), CancellationToken.None);
 
             // Assert
             res.Should().NotBeNull();

@@ -11,7 +11,7 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.Commands
     {
         public DeleteCustomerCommandValidator()
         {
-            RuleFor(customer => customer.Id)
+            RuleFor(customer => customer.Email)
                 .NotEmpty();
         }
     }

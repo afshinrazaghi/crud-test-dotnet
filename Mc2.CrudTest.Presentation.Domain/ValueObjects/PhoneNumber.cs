@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Ardalis.Result;
+using Ardalis.Result.FluentValidation;
 using Mc2.CrudTest.Presentation.Domain.ValueObjects.Validators;
 using PhoneNumbers;
 
@@ -21,10 +22,10 @@ public sealed record PhoneNumber
 
     public static Result<PhoneNumber> Create(string phoneNumber)
     {
-        var validator = new PhoneNumberValidator();
-        var validationResult = validator.Validate(phoneNumber);
+        PhoneNumberValidator validator = new PhoneNumberValidator();
+        FluentValidation.Results.ValidationResult validationResult = validator.Validate(phoneNumber);
         if (!validationResult.IsValid)
-            return Result<PhoneNumber>.Error(validationResult.Errors.First().ErrorMessage);
+            return Result<PhoneNumber>.Invalid(validationResult.AsErrors());
         return Result<PhoneNumber>.Success(new PhoneNumber(phoneNumber));
     }
 

@@ -37,7 +37,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Command.DatabaseConfiguration
                     entity.Property(phoneNumber => phoneNumber.Value)
                     .IsRequired()
                     .HasColumnName(nameof(Customer.PhoneNumber))
-                    .HasMaxLength(9);
+                    .HasMaxLength(13);
                 });
 
             builder.OwnsOne(customer => customer.Email, entity =>

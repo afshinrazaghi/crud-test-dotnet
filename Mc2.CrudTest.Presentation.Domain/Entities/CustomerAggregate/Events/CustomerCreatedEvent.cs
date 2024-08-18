@@ -14,5 +14,7 @@ namespace Mc2.CrudTest.Presentation.Domain.Entities.CustomerAggregate.Events
         {
 
         }
+
+        
     }
 }
