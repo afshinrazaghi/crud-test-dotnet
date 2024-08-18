@@ -11,7 +11,7 @@ namespace Mc2.CrudTest.UnitTests.Fixtures
     {
         public static string Generate()
         {
-            var ibanGenerator = new IbanGenerator();
+            IbanGenerator ibanGenerator = new IbanGenerator();
             return ibanGenerator.Generate();
         }
     }

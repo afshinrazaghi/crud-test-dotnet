@@ -65,7 +65,7 @@
         {
 
             // Send request and get Customer by email
-            var getCustomerResult = await GetCustomerByEmail(Email);
+            ApiResponse<CustomerQueryModel?>? getCustomerResult = await GetCustomerByEmail(Email);
             if (getCustomerResult != null && getCustomerResult.Success && getCustomerResult.Result != null)
             {
                 FormData.FirstName = getCustomerResult.Result.FirstName;
@@ -95,7 +95,7 @@
     {
         try
         {
-            var res = await Http.GetFromJsonAsync<ApiResponse<CustomerQueryModel?>>($"{Program.EndPoint}/GetCustomerByEmail?email={email}");
+            ApiResponse<CustomerQueryModel?>? res = await Http.GetFromJsonAsync<ApiResponse<CustomerQueryModel?>>($"{Program.EndPoint}/GetCustomerByEmail?email={email}");
             return res;
         }
         catch (Exception ex)
@@ -111,8 +111,8 @@
         try
         {
 
-            var response = await Http.PutAsJsonAsync<UpdateCustomerCommand>(Program.EndPoint, FormData);
-            var result = (await response.Content.ReadAsStringAsync()).FromJson<ApiResponse<CreatedCustomerResponse>>();
+            HttpResponseMessage response = await Http.PutAsJsonAsync<UpdateCustomerCommand>(Program.EndPoint, FormData);
+            ApiResponse<CreatedCustomerResponse> result = (await response.Content.ReadAsStringAsync()).FromJson<ApiResponse<CreatedCustomerResponse>>();
             if (result.Success)
             {
                 toastService.ShowSuccess(result.SuccessMessage ?? "Customer Updated successfully!");

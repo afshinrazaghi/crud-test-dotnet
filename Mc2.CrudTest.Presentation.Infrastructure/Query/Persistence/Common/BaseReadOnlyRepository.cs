@@ -23,7 +23,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.Query.Persistence.Common
 
         public async Task<TQueryModel> GetByIdAsync(TKey id)
         {
-            using var asyncCursor = await Collection.FindAsync(queryModel => queryModel.Id.Equals(id));
+            using IAsyncCursor<TQueryModel> asyncCursor = await Collection.FindAsync(queryModel => queryModel.Id.Equals(id));
             return await asyncCursor.FirstOrDefaultAsync();
         }
     }

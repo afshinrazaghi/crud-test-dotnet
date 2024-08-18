@@ -21,8 +21,8 @@ namespace Mc2.CrudTest.Presentation.Domain.ValueObjects
 
         public static Result<BankAccountNumber> Create(string bankAccountNumber)
         {
-            var bankAccountNumberValidator = new BankAccountNumberValidator();
-            var validationResult = bankAccountNumberValidator.Validate(bankAccountNumber);
+            BankAccountNumberValidator bankAccountNumberValidator = new BankAccountNumberValidator();
+            FluentValidation.Results.ValidationResult validationResult = bankAccountNumberValidator.Validate(bankAccountNumber);
             if (!validationResult.IsValid)
                 return Result<BankAccountNumber>.Invalid(validationResult.AsErrors());
             return Result<BankAccountNumber>.Success(new BankAccountNumber(bankAccountNumber));

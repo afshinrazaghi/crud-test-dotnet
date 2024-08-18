@@ -4,34 +4,30 @@ using TechTalk.SpecFlow;
 
 namespace Mc2.CrudTest.AcceptanceTests.Hooks
 {
-    
-
     [Binding]
     public class Hooks
     {
-        public Hooks()
+        private readonly MsSqlFixture _msSqlFixture;
+        private readonly MongoDbFixture _mongoDbFixture;
+
+        public Hooks(MsSqlFixture msSqlFixture, MongoDbFixture mongoDbFixture)
         {
-            
+            this._msSqlFixture = msSqlFixture;
+            this._mongoDbFixture = mongoDbFixture;
         }
 
+        [BeforeScenario]
+        public async Task BeforeScenario()
+        {
+            await _msSqlFixture.InitializeAsync();
+            await _mongoDbFixture.InitializeAsync();
+        }
 
-        //private static MsSqlFixture msSqlFixture;
-        //private static MongoDbFixture mongoDbFixture;
-
-        //[BeforeTestRun]
-        //public static async Task BeforeTestRun()
-        //{
-        //    msSqlFixture = new MsSqlFixture();
-        //    mongoDbFixture = new MongoDbFixture();
-        //    await msSqlFixture.InitializeAsync();
-        //    await mongoDbFixture.InitializeAsync();
-        //}
-
-        //[AfterTestRun]
-        //public static async Task AfterTestRun()
-        //{
-        //    await msSqlFixture?.DisposeAsync();
-        //    await mongoDbFixture?.DisposeAsync();
-        //}
+        [AfterScenario]
+        public async void AfterScenario()
+        {
+            await _msSqlFixture.DisposeAsync();
+            await _mongoDbFixture.DisposeAsync();
+        }
     }
 }

@@ -79,10 +79,10 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
         public async Task CreateNewCustomer_WhenCalledWithValidInfo_ShouldAddedToCustomerList()
         {
             // Arrange
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
             await ClearCustomers();
 
-            var customer = CustomerFactory.Create(
+            Customer customer = CustomerFactory.Create(
                 "Afshin",
                 "Razaghi",
                 new DateTime(1990, 04, 12),
@@ -110,13 +110,11 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                     await page.WaitForURLAsync($"{ClientBaseUrl}/customers");
                     (await page.Locator("text=Customer List").IsVisibleAsync()).Should().BeTrue();
                     await page.WaitForSelectorAsync("table tbody");
-                    //var imgByteArray = await page.ScreenshotAsync();
-                    //File.WriteAllBytes($"D://files//images//{Guid.NewGuid()}.jpg", imgByteArray);
 
-                    var rows = await page.QuerySelectorAllAsync("tbody tr");
+                    IReadOnlyList<Microsoft.Playwright.IElementHandle> rows = await page.QuerySelectorAllAsync("tbody tr");
                     rows.Count.Should().Be(1);
-                    var row = rows[0];
-                    var cells = await row.QuerySelectorAllAsync("td");
+                    Microsoft.Playwright.IElementHandle row = rows[0];
+                    IReadOnlyList<Microsoft.Playwright.IElementHandle> cells = await row.QuerySelectorAllAsync("td");
                     (await cells[0].InnerTextAsync()).Should().Be(customer.FirstName);
                     (await cells[1].InnerTextAsync()).Should().Be(customer.LastName);
                     (await cells[2].InnerTextAsync()).Should().Be(customer.Email.Value);
@@ -132,23 +130,23 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
         public async Task CreateNewCustomer_WhenDuplicateEmail_ReturnsError()
         {
             // Arrange
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
             await ClearCustomers();
 
             #region Create a customer
-            var builder = new DbContextOptionsBuilder<WriteDbContext>()
+            DbContextOptionsBuilder<WriteDbContext> builder = new DbContextOptionsBuilder<WriteDbContext>()
                     .UseSqlServer(_msSqlFixture.Container.GetConnectionString());
-            var writeDbContext = new WriteDbContext(builder.Options);
+            WriteDbContext writeDbContext = new WriteDbContext(builder.Options);
 
-            var repository = new CustomerWriteOnlyRepository(writeDbContext);
-            var unitOfWork = new UnitOfWork(
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(writeDbContext);
+            UnitOfWork unitOfWork = new UnitOfWork(
                 writeDbContext,
                 Substitute.For<IEventStoreRepository>(),
                 Substitute.For<IMediator>(),
                 Substitute.For<ILogger<UnitOfWork>>()
             );
 
-            var customer = new Faker<Customer>()
+            Customer customer = new Faker<Customer>()
                 .RuleFor(customer => customer.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(customer => customer.LastName, faker => faker.Person.LastName)
                 .RuleFor(customer => customer.Email, faker => Email.Create(faker.Person.Email).Value)
@@ -187,10 +185,10 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
         public async Task CreateNewCustomer_WhenPhoneNumberInvalid_ReturnsError()
         {
             // Arrange
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
             await ClearCustomers();
 
-            var customer = new Faker<Customer>()
+            Customer customer = new Faker<Customer>()
                .RuleFor(customer => customer.FirstName, faker => faker.Person.FirstName)
                .RuleFor(customer => customer.LastName, faker => faker.Person.LastName)
                .RuleFor(customer => customer.Email, faker => Email.Create("afshin.razaghi.net@gmail.com").Value)
@@ -226,10 +224,10 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
         public async Task CreateNewCustomer_WhenEmailInvalid_ReturnsError()
         {
             // Arrange
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
             await ClearCustomers();
 
-            var customer = new Faker<Customer>()
+            Customer customer = new Faker<Customer>()
                .RuleFor(customer => customer.FirstName, faker => faker.Person.FirstName)
                .RuleFor(customer => customer.LastName, faker => faker.Person.LastName)
                .RuleFor(customer => customer.PhoneNumber, faker => PhoneNumber.Create("+989195512635").Value)
@@ -265,10 +263,10 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
         public async Task CreateNewCustomer_WhenEmailBankAccountNumberInvalid_ReturnsError()
         {
             // Arrange
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
             await ClearCustomers();
 
-            var customer = new Faker<Customer>()
+            Customer customer = new Faker<Customer>()
                .RuleFor(customer => customer.FirstName, faker => faker.Person.FirstName)
                .RuleFor(customer => customer.LastName, faker => faker.Person.LastName)
                .RuleFor(customer => customer.Email, faker => Email.Create(faker.Person.Email).Value)
@@ -307,10 +305,10 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
         public async Task UpdateExistingCustomer_WhenCalledWithValidInfo_ReturnsTrueAndUpdateCustomer()
         {
             // Arrange
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
             await ClearCustomers();
 
-            var command = new Faker<CreateCustomerCommand>()
+            List<CreateCustomerCommand> command = new Faker<CreateCustomerCommand>()
               .RuleFor(command => command.FirstName, faker => faker.Person.FirstName)
               .RuleFor(command => command.LastName, faker => faker.Person.LastName)
               .RuleFor(command => command.DateOfBirth, faker => faker.Person.DateOfBirth)
@@ -320,8 +318,8 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
               .Generate(2);
 
             //Act & Assert
-            var customer = command[0];
-            var updateCustomerInfo = command[1];
+            CreateCustomerCommand customer = command[0];
+            CreateCustomerCommand updateCustomerInfo = command[1];
 
             await _playwrightFixture.GotoPageAsync(
               $"{ClientBaseUrl}/customers",
@@ -339,8 +337,6 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                   await page.WaitForURLAsync($"{ClientBaseUrl}/customers");
                   (await page.Locator("text=Customer List").IsVisibleAsync()).Should().BeTrue();
                   await page.WaitForSelectorAsync("table tbody");
-                  //var imgByteArray = await page.ScreenshotAsync();
-                  //File.WriteAllBytes($"D://files//images//{Guid.NewGuid()}.jpg", imgByteArray);
 
                   await page.ClickAsync("button[name=edit]");
                   await page.WaitForURLAsync((url) => string.Equals(url, $"{ClientBaseUrl}/editCustomer/{customer.Email}", StringComparison.OrdinalIgnoreCase));
@@ -355,11 +351,11 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                   await page.ClickAsync("button[type=submit]");
                   await page.WaitForURLAsync($"{ClientBaseUrl}/customers");
                   await page.WaitForSelectorAsync("table tbody");
-                  var rows = await page.QuerySelectorAllAsync("tbody tr"); ;
+                  IReadOnlyList<Microsoft.Playwright.IElementHandle> rows = await page.QuerySelectorAllAsync("tbody tr"); ;
                   rows.Count.Should().Be(1);
 
-                  var row = rows[0];
-                  var cells = await row.QuerySelectorAllAsync("td");
+                  Microsoft.Playwright.IElementHandle row = rows[0];
+                  IReadOnlyList<Microsoft.Playwright.IElementHandle> cells = await row.QuerySelectorAllAsync("td");
                   (await cells[0].InnerTextAsync()).Should().Be(updateCustomerInfo.FirstName);
                   (await cells[1].InnerTextAsync()).Should().Be(updateCustomerInfo.LastName);
                   (await cells[2].InnerTextAsync()).Should().BeEquivalentTo(updateCustomerInfo.Email);
@@ -374,22 +370,22 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
         public async Task UpdateExistingCustomer_WhenDuplicateEmail_ReturnsError()
         {
             // Arrange
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
             await ClearCustomers();
 
             #region Create a customer
-            var builder = new DbContextOptionsBuilder<WriteDbContext>()
+            DbContextOptionsBuilder<WriteDbContext> builder = new DbContextOptionsBuilder<WriteDbContext>()
                     .UseSqlServer(_msSqlFixture.Container.GetConnectionString());
-            var writeDbContext = new WriteDbContext(builder.Options);
-            var repository = new CustomerWriteOnlyRepository(writeDbContext);
-            var unitOfWork = new UnitOfWork(
+            WriteDbContext writeDbContext = new WriteDbContext(builder.Options);
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(writeDbContext);
+            UnitOfWork unitOfWork = new UnitOfWork(
                 writeDbContext,
                 Substitute.For<IEventStoreRepository>(),
                 Substitute.For<IMediator>(),
                 Substitute.For<ILogger<UnitOfWork>>()
             );
 
-            var customerOne = new Faker<Customer>()
+            Customer customerOne = new Faker<Customer>()
                 .RuleFor(customer => customer.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(customer => customer.LastName, faker => faker.Person.LastName)
                 .RuleFor(customer => customer.Email, faker => Email.Create(faker.Person.Email).Value)
@@ -398,7 +394,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                 .RuleFor(customer => customer.DateOfBirth, faker => faker.Person.DateOfBirth)
                 .Generate();
 
-            var customerTwo = new Faker<Customer>()
+            Customer customerTwo = new Faker<Customer>()
                 .RuleFor(customer => customer.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(customer => customer.LastName, faker => faker.Person.LastName)
                 .RuleFor(customer => customer.Email, faker => Email.Create(faker.Person.Email).Value)
@@ -407,7 +403,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                 .RuleFor(customer => customer.DateOfBirth, faker => faker.Person.DateOfBirth)
                 .Generate();
 
-            var customerThree = new Faker<Customer>()
+            Customer customerThree = new Faker<Customer>()
                 .RuleFor(customer => customer.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(customer => customer.LastName, faker => faker.Person.LastName)
                 .RuleFor(customer => customer.Email, faker => Email.Create(faker.Person.Email).Value)
@@ -420,7 +416,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
             writeDbContext.Add(customerTwo);
             await writeDbContext.SaveChangesAsync();
 
-            var synchronizeDb = new NoSqlDbContext(
+            ISynchronizeDb synchronizeDb = new NoSqlDbContext(
                Options.Create(new Presentation.Shared.AppSettings.ConnectionOptions
                {
                    NoSqlConnection = _mongoDbFixture.Container.GetConnectionString()
@@ -428,7 +424,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                Substitute.For<ILogger<NoSqlDbContext>>()
            );
 
-            var customerOneQueryModel = new CustomerQueryModel
+            CustomerQueryModel customerOneQueryModel = new CustomerQueryModel
             {
                 Id = customerOne.Id,
                 FirstName = customerOne.FirstName,
@@ -440,7 +436,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
             };
 
 
-            var customerTwoQueryModel = new CustomerQueryModel
+            CustomerQueryModel customerTwoQueryModel = new CustomerQueryModel
             {
                 Id = customerTwo.Id,
                 FirstName = customerTwo.FirstName,
@@ -451,7 +447,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                 BankAccountNumber = customerTwo.BankAccountNumber.Value
             };
 
-            var customerQueryModels = new List<CustomerQueryModel> { customerOneQueryModel, customerTwoQueryModel };
+            List<CustomerQueryModel> customerQueryModels = new List<CustomerQueryModel> { customerOneQueryModel, customerTwoQueryModel };
             await synchronizeDb.UpsertAsync<CustomerQueryModel>(customerOneQueryModel, f => f.Id.Equals(customerOneQueryModel.Id));
             await synchronizeDb.UpsertAsync<CustomerQueryModel>(customerTwoQueryModel, f => f.Id.Equals(customerTwoQueryModel.Id));
 
@@ -465,9 +461,9 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                 async (page) =>
                 {
                     await page.WaitForSelectorAsync("button[name=edit]");
-                    var rows = await page.QuerySelectorAllAsync("tbody tr");
-                    var firstRow = rows[0];
-                    var firstRowEditButton = await firstRow.QuerySelectorAsync("button[name=edit]");
+                    IReadOnlyList<Microsoft.Playwright.IElementHandle> rows = await page.QuerySelectorAllAsync("tbody tr");
+                    Microsoft.Playwright.IElementHandle firstRow = rows[0];
+                    Microsoft.Playwright.IElementHandle? firstRowEditButton = await firstRow.QuerySelectorAsync("button[name=edit]");
                     firstRowEditButton.Should().NotBeNull();
                     await firstRowEditButton!.ClickAsync();
                     await page.WaitForURLAsync((url) => string.Equals(url, $"{ClientBaseUrl}/editCustomer/{customerOne.Email}", StringComparison.OrdinalIgnoreCase));
@@ -480,7 +476,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                     await page.FillAsync("input[name='bankAccountNumber']", customerThree.BankAccountNumber.Value);
                     await page.FillAsync("input[name='dateOfBirth']", customerThree.DateOfBirth.ToString("yyyy-MM-dd"));
                     await page.ClickAsync("button[type=submit]");
-                    var imgByteArray = await page.ScreenshotAsync();
+                    byte[] imgByteArray = await page.ScreenshotAsync();
                     File.WriteAllBytes($"D://files//images//{Guid.NewGuid()}.jpg", imgByteArray);
 
                     await page.WaitForSelectorAsync(".blazored-toast-error");
@@ -499,21 +495,21 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
         public async Task DeleteCustomer_WhenCalled_RemoveCustomerFromTable()
         {
             // Arrange
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
             await ClearCustomers();
 
-            var builder = new DbContextOptionsBuilder<WriteDbContext>()
+            DbContextOptionsBuilder<WriteDbContext> builder = new DbContextOptionsBuilder<WriteDbContext>()
                     .UseSqlServer(_msSqlFixture.Container.GetConnectionString());
-            var writeDbContext = new WriteDbContext(builder.Options);
-            var repository = new CustomerWriteOnlyRepository(writeDbContext);
-            var unitOfWork = new UnitOfWork(
+            WriteDbContext writeDbContext = new WriteDbContext(builder.Options);
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(writeDbContext);
+            UnitOfWork unitOfWork = new UnitOfWork(
                 writeDbContext,
                 Substitute.For<IEventStoreRepository>(),
                 Substitute.For<IMediator>(),
                 Substitute.For<ILogger<UnitOfWork>>()
             );
 
-            var customer = new Faker<Customer>()
+            Customer customer = new Faker<Customer>()
                 .RuleFor(customer => customer.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(customer => customer.LastName, faker => faker.Person.LastName)
                 .RuleFor(customer => customer.Email, faker => Email.Create(faker.Person.Email).Value)
@@ -525,7 +521,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
             await unitOfWork.SaveChangesAsync();
             writeDbContext.ChangeTracker.Clear();
 
-            var synchronizeDb = new NoSqlDbContext(
+            ISynchronizeDb synchronizeDb = new NoSqlDbContext(
                 Options.Create(new Presentation.Shared.AppSettings.ConnectionOptions
                 {
                     NoSqlConnection = _mongoDbFixture.Container.GetConnectionString()
@@ -533,7 +529,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                 Substitute.For<ILogger<NoSqlDbContext>>()
             );
 
-            var customerQueryModel = new CustomerQueryModel
+            CustomerQueryModel customerQueryModel = new CustomerQueryModel
             {
                 Id = customer.Id,
                 FirstName = customer.FirstName,
@@ -552,7 +548,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
              $"{ClientBaseUrl}/customers",
              async (page) =>
              {
-                 var imgByteArray = await page.ScreenshotAsync();
+                 byte[] imgByteArray = await page.ScreenshotAsync();
                  File.WriteAllBytes($"D://files//images//{Guid.NewGuid()}.jpg", imgByteArray);
 
                  await page.WaitForSelectorAsync("table tbody");
@@ -566,14 +562,14 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                  await page.WaitForSelectorAsync("h2:text('Success')");
                  await page.ClickAsync(".swal2-confirm");
                  await page.WaitForSelectorAsync("table tbody");
-                 var rows = await page.QuerySelectorAllAsync("tbody tr");
+                 IReadOnlyList<Microsoft.Playwright.IElementHandle> rows = await page.QuerySelectorAllAsync("tbody tr");
                  rows.Count.Should().Be(1);
 
                  imgByteArray = await page.ScreenshotAsync();
                  File.WriteAllBytes($"D://files//images//{Guid.NewGuid()}.jpg", imgByteArray);
 
-                 var row = rows[0];
-                 var cells = await row.QuerySelectorAllAsync("td");
+                 Microsoft.Playwright.IElementHandle row = rows[0];
+                 IReadOnlyList<Microsoft.Playwright.IElementHandle> cells = await row.QuerySelectorAllAsync("td");
                  cells.Count().Should().Be(1);
                  (await cells[0].InnerTextAsync()).Should().Be("No Records Found");
 
@@ -591,22 +587,22 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
         public async Task CustomersPage_WhenCalledWithExistCustomers_ShowsExistingCustomers()
         {
             // Arrange
-            var httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
+            HttpClient httpClient = _webApplicationFactory.CreateClient(CreateClientOptions());
             await ClearCustomers();
 
-            var builder = new DbContextOptionsBuilder<WriteDbContext>()
+            DbContextOptionsBuilder<WriteDbContext> builder = new DbContextOptionsBuilder<WriteDbContext>()
                     .UseSqlServer(_msSqlFixture.Container.GetConnectionString());
-            var writeDbContext = new WriteDbContext(builder.Options);
+            WriteDbContext writeDbContext = new WriteDbContext(builder.Options);
 
-            var repository = new CustomerWriteOnlyRepository(writeDbContext);
-            var unitOfWork = new UnitOfWork(
+            CustomerWriteOnlyRepository repository = new CustomerWriteOnlyRepository(writeDbContext);
+            UnitOfWork unitOfWork = new UnitOfWork(
                 writeDbContext,
                 Substitute.For<IEventStoreRepository>(),
                 Substitute.For<IMediator>(),
                 Substitute.For<ILogger<UnitOfWork>>()
             );
 
-            var customerOne = new Faker<Customer>()
+            Customer customerOne = new Faker<Customer>()
                 .RuleFor(customer => customer.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(customer => customer.LastName, faker => faker.Person.LastName)
                 .RuleFor(customer => customer.Email, faker => Email.Create(faker.Person.Email).Value)
@@ -615,7 +611,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                 .RuleFor(customer => customer.DateOfBirth, faker => faker.Person.DateOfBirth)
                 .Generate();
 
-            var customerTwo = new Faker<Customer>()
+            Customer customerTwo = new Faker<Customer>()
                 .RuleFor(customer => customer.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(customer => customer.LastName, faker => faker.Person.LastName)
                 .RuleFor(customer => customer.Email, faker => Email.Create(faker.Person.Email).Value)
@@ -624,7 +620,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                 .RuleFor(customer => customer.DateOfBirth, faker => faker.Person.DateOfBirth)
                 .Generate();
 
-            var customerThree = new Faker<Customer>()
+            Customer customerThree = new Faker<Customer>()
                 .RuleFor(customer => customer.FirstName, faker => faker.Person.FirstName)
                 .RuleFor(customer => customer.LastName, faker => faker.Person.LastName)
                 .RuleFor(customer => customer.Email, faker => Email.Create(faker.Person.Email).Value)
@@ -639,7 +635,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
             await unitOfWork.SaveChangesAsync();
             writeDbContext.ChangeTracker.Clear();
 
-            var synchronizeDb = new NoSqlDbContext(
+            NoSqlDbContext synchronizeDb = new NoSqlDbContext(
                Options.Create(new Presentation.Shared.AppSettings.ConnectionOptions
                {
                    NoSqlConnection = _mongoDbFixture.Container.GetConnectionString()
@@ -647,7 +643,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                Substitute.For<ILogger<NoSqlDbContext>>()
            );
 
-            var customerOneQueryModel = new CustomerQueryModel
+            CustomerQueryModel customerOneQueryModel = new CustomerQueryModel
             {
                 Id = customerOne.Id,
                 FirstName = customerOne.FirstName,
@@ -659,7 +655,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
             };
 
 
-            var customerTwoQueryModel = new CustomerQueryModel
+            CustomerQueryModel customerTwoQueryModel = new CustomerQueryModel
             {
                 Id = customerTwo.Id,
                 FirstName = customerTwo.FirstName,
@@ -671,7 +667,7 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
             };
 
 
-            var customerThreeQueryModel = new CustomerQueryModel
+            CustomerQueryModel customerThreeQueryModel = new CustomerQueryModel
             {
                 Id = customerThree.Id,
                 FirstName = customerThree.FirstName,
@@ -682,8 +678,8 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                 BankAccountNumber = customerThree.BankAccountNumber.Value
             };
 
-            var customerQueryModels = new List<CustomerQueryModel> { customerOneQueryModel, customerTwoQueryModel, customerThreeQueryModel };
-            customerQueryModels = customerQueryModels.OrderBy(x => x.FirstName).ThenByDescending(x => x.DateOfBirth).ToList() ;
+            List<CustomerQueryModel> customerQueryModels = new List<CustomerQueryModel> { customerOneQueryModel, customerTwoQueryModel, customerThreeQueryModel };
+            customerQueryModels = customerQueryModels.OrderBy(x => x.FirstName).ThenByDescending(x => x.DateOfBirth).ToList();
 
             await synchronizeDb.UpsertAsync<CustomerQueryModel>(customerOneQueryModel, f => f.Id.Equals(customerOneQueryModel.Id));
             await synchronizeDb.UpsertAsync<CustomerQueryModel>(customerTwoQueryModel, f => f.Id.Equals(customerTwoQueryModel.Id));
@@ -697,16 +693,16 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
                 {
                     await page.WaitForSelectorAsync("button[name='edit']");
 
-                    var imgByteArray = await page.ScreenshotAsync();
+                    byte[] imgByteArray = await page.ScreenshotAsync();
                     File.WriteAllBytes($"D://files//images//{Guid.NewGuid()}.jpg", imgByteArray);
 
-                    var rows = await page.QuerySelectorAllAsync("tbody tr");
+                    IReadOnlyList<Microsoft.Playwright.IElementHandle> rows = await page.QuerySelectorAllAsync("tbody tr");
 
                     for (int i = 0; i < rows.Count; i++)
                     {
-                        var row = rows[i];
-                        var customerQueryModel = customerQueryModels[i];
-                        var cells = await row.QuerySelectorAllAsync("td");
+                        Microsoft.Playwright.IElementHandle row = rows[i];
+                        CustomerQueryModel customerQueryModel = customerQueryModels[i];
+                        IReadOnlyList<Microsoft.Playwright.IElementHandle> cells = await row.QuerySelectorAllAsync("td");
 
                         (await cells[0].InnerTextAsync()).Should().Be(customerQueryModel.FirstName);
                         (await cells[1].InnerTextAsync()).Should().Be(customerQueryModel.LastName);
@@ -758,15 +754,15 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
 
                         configureServices?.Invoke(services);
 
-                        using var serviceProvider = services.BuildServiceProvider(true);
-                        using var serviceScope = serviceProvider.CreateScope();
+                        using ServiceProvider serviceProvider = services.BuildServiceProvider(true);
+                        using IServiceScope serviceScope = serviceProvider.CreateScope();
 
-                        var writeDbContext = serviceScope.ServiceProvider.GetRequiredService<WriteDbContext>();
+                        WriteDbContext writeDbContext = serviceScope.ServiceProvider.GetRequiredService<WriteDbContext>();
                         writeDbContext.Database.EnsureCreated();
                         writeDbContext.Database.ExecuteSqlRaw("Delete from Customers");
 
                         //services.AddSingleton(_ => Substitute.For<EventStoreDbContext>());
-                        var eventStoreDbContext = serviceScope.ServiceProvider.GetRequiredService<EventStoreDbContext>();
+                        EventStoreDbContext eventStoreDbContext = serviceScope.ServiceProvider.GetRequiredService<EventStoreDbContext>();
                         eventStoreDbContext.Database.EnsureCreated();
 
                         configureServiceScope?.Invoke(serviceScope);
@@ -789,21 +785,21 @@ namespace Mc2.CrudTest.Presentation.Client.Tests
 
         private async Task ClearCustomers()
         {
-            var builder = new DbContextOptionsBuilder<WriteDbContext>()
+            DbContextOptionsBuilder<WriteDbContext> builder = new DbContextOptionsBuilder<WriteDbContext>()
                    .UseSqlServer(_msSqlFixture.Container.GetConnectionString());
-            var writeDbContext = new WriteDbContext(builder.Options);
+            WriteDbContext writeDbContext = new WriteDbContext(builder.Options);
             await writeDbContext.Database.ExecuteSqlRawAsync("Delete From Customers");
             await writeDbContext.SaveChangesAsync();
 
-            var noSqlDbContext = new NoSqlDbContext(
+            NoSqlDbContext noSqlDbContext = new NoSqlDbContext(
                   Options.Create(new Presentation.Shared.AppSettings.ConnectionOptions
                   {
                       NoSqlConnection = _mongoDbFixture.Container.GetConnectionString()
                   }), Substitute.For<ILogger<NoSqlDbContext>>());
 
-            var asyncCursor = await noSqlDbContext.GetCollection<CustomerQueryModel>().FindAsync(Builders<CustomerQueryModel>.Filter.Empty);
-            var records = await asyncCursor.ToListAsync();
-            foreach (var record in records)
+            IAsyncCursor<CustomerQueryModel> asyncCursor = await noSqlDbContext.GetCollection<CustomerQueryModel>().FindAsync(Builders<CustomerQueryModel>.Filter.Empty);
+            List<CustomerQueryModel> records = await asyncCursor.ToListAsync();
+            foreach (CustomerQueryModel record in records)
             {
                 await noSqlDbContext.GetCollection<CustomerQueryModel>().DeleteOneAsync(Builders<CustomerQueryModel>.Filter.Eq(x => x.Id, record.Id));
             }

@@ -23,19 +23,19 @@ namespace Mc2.CrudTest.AcceptanceTests.Fixtures
             Func<IPage, Task> testHandler,
             Browser browserType)
         {
-            var browser = await SelectBrowserAsync(browserType);
-            await using var context = await browser
+            IBrowser browser = await SelectBrowserAsync(browserType);
+            await using IBrowserContext context = await browser
                 .NewContextAsync(new BrowserNewContextOptions
                 {
                     IgnoreHTTPSErrors = true,
                 });
 
-            var page = await context.NewPageAsync();
+            IPage page = await context.NewPageAsync();
             page.Should().NotBeNull();
 
             try
             {
-                var gotoResult = await page.GotoAsync(
+                IResponse? gotoResult = await page.GotoAsync(
                     url,
                     new PageGotoOptions
                     {
@@ -74,19 +74,19 @@ namespace Mc2.CrudTest.AcceptanceTests.Fixtures
             {
                 if (ChromiumBrowser != null && ChromiumBrowser.IsValueCreated)
                 {
-                    var browser = await ChromiumBrowser.Value;
+                    IBrowser browser = await ChromiumBrowser.Value;
                     await browser.DisposeAsync();
                 }
 
                 if (FirefoxBrowser != null && FirefoxBrowser.IsValueCreated)
                 {
-                    var browser = await FirefoxBrowser.Value;
+                    IBrowser browser = await FirefoxBrowser.Value;
                     await browser.DisposeAsync();
                 }
 
                 if (WebkitBrowser != null && WebkitBrowser.IsValueCreated)
                 {
-                    var browser = await WebkitBrowser.Value;
+                    IBrowser browser = await WebkitBrowser.Value;
                     await browser.DisposeAsync();
                 }
 
@@ -99,7 +99,7 @@ namespace Mc2.CrudTest.AcceptanceTests.Fixtures
         #region private methods
         private static void InstallPlaywright()
         {
-            var exitCode = Microsoft.Playwright.Program.Main(new[] { "install-deps" });
+            int exitCode = Microsoft.Playwright.Program.Main(new[] { "install-deps" });
             if (exitCode != 0)
             {
                 throw new Exception($"Playwright exited with code {exitCode} on install-deps");

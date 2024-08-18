@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Mc2.CrudTest.AcceptanceTests.Helper;
+using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -13,12 +15,12 @@ namespace Mc2.CrudTest.AcceptanceTests.Fixtures
         public MongoDbContainer Container { get; }
         public MongoDbFixture()
         {
+            IConfiguration configuration = ConfigurationHelper.GetConfiguration();
+            int port = configuration.GetSection("MongoDb").GetValue<int>("PORT");
             Container = new MongoDbBuilder()
                 .WithImage("mongo:latest")
-                .WithPortBinding(27017, true)
+                .WithPortBinding(port, true)
                 .Build();
-
-            Task.Run(InitializeAsync).Wait();
         }
 
         public Task DisposeAsync()

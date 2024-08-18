@@ -29,13 +29,13 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandle
 
         public async Task<Result> Handle(DeleteCustomerCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(request);
+            FluentValidation.Results.ValidationResult validationResult = await _validator.ValidateAsync(request);
             if (!validationResult.IsValid)
             {
                 return Result.Invalid(validationResult.AsErrors());
             }
 
-            var customer = await _repository.GetByEmailAsync(Email.Create(request.Email).Value);
+            Customer? customer = await _repository.GetByEmailAsync(Email.Create(request.Email).Value);
             if (customer is null)
                 return Result.NotFound($"No customer found by Email : {request.Email}");
 

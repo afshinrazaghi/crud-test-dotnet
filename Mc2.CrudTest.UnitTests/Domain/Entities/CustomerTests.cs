@@ -19,7 +19,7 @@ namespace Mc2.CrudTest.UnitTests.Domain.Entities
         {
             // Arrange
 
-            var customerFaker = new Faker<Customer>("nl")
+            Faker<Customer> customerFaker = new Faker<Customer>("nl")
                 .CustomInstantiator(faker => CustomerFactory.Create(
                     faker.Person.FirstName,
                     faker.Person.LastName,
@@ -31,7 +31,7 @@ namespace Mc2.CrudTest.UnitTests.Domain.Entities
 
             // Act
 
-            var res = customerFaker.Generate();
+            Customer res = customerFaker.Generate();
 
             // Assert
 

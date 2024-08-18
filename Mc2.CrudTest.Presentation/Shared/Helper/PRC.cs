@@ -18,7 +18,7 @@ namespace Mc2.CrudTest.Presentation.Shared.Helper
     {
         public void KillByPort(int port)
         {
-            var processes = GetAllProcesses();
+            List<PRC> processes = GetAllProcesses();
             if (processes.Any(p => p.Port == port))
                 try
                 {
@@ -36,7 +36,7 @@ namespace Mc2.CrudTest.Presentation.Shared.Helper
 
         public List<PRC> GetAllProcesses()
         {
-            var pStartInfo = new ProcessStartInfo();
+            ProcessStartInfo pStartInfo = new ProcessStartInfo();
             pStartInfo.FileName = "netstat.exe";
             pStartInfo.Arguments = "-a -n -o";
             pStartInfo.WindowStyle = ProcessWindowStyle.Maximized;
@@ -45,29 +45,29 @@ namespace Mc2.CrudTest.Presentation.Shared.Helper
             pStartInfo.RedirectStandardOutput = true;
             pStartInfo.RedirectStandardError = true;
 
-            var process = new Process()
+            Process process = new Process()
             {
                 StartInfo = pStartInfo
             };
             process.Start();
 
-            var soStream = process.StandardOutput;
+            StreamReader soStream = process.StandardOutput;
 
-            var output = soStream.ReadToEnd();
+            string output = soStream.ReadToEnd();
             if (process.ExitCode != 0)
                 throw new Exception("somethign broke");
 
-            var result = new List<PRC>();
+            List<PRC> result = new List<PRC>();
 
-            var lines = Regex.Split(output, "\r\n");
-            foreach (var line in lines)
+            string[] lines = Regex.Split(output, "\r\n");
+            foreach (string line in lines)
             {
                 if (line.Trim().StartsWith("Proto"))
                     continue;
 
-                var parts = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] parts = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                var len = parts.Length;
+                int len = parts.Length;
                 if (len > 2)
                     result.Add(new PRC
                     {
@@ -83,7 +83,7 @@ namespace Mc2.CrudTest.Presentation.Shared.Helper
 
         public List<PRC> PortInUse(int port)
         {
-            var pStartInfo = new ProcessStartInfo();
+            ProcessStartInfo pStartInfo = new ProcessStartInfo();
             pStartInfo.FileName = "netstat.exe";
             pStartInfo.Arguments = $"-a -n -o | findstr {port}";
             pStartInfo.WindowStyle = ProcessWindowStyle.Maximized;
@@ -92,29 +92,29 @@ namespace Mc2.CrudTest.Presentation.Shared.Helper
             pStartInfo.RedirectStandardOutput = true;
             pStartInfo.RedirectStandardError = true;
 
-            var process = new Process()
+            Process process = new Process()
             {
                 StartInfo = pStartInfo
             };
             process.Start();
 
-            var soStream = process.StandardOutput;
+            StreamReader soStream = process.StandardOutput;
 
-            var output = soStream.ReadToEnd();
+            string output = soStream.ReadToEnd();
             if (process.ExitCode != 0)
                 throw new Exception("somethign broke");
 
-            var result = new List<PRC>();
+            List<PRC> result = new List<PRC>();
 
-            var lines = Regex.Split(output, "\r\n");
-            foreach (var line in lines)
+            string[] lines = Regex.Split(output, "\r\n");
+            foreach (string line in lines)
             {
                 if (line.Trim().StartsWith("Proto"))
                     continue;
 
-                var parts = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
+                string[] parts = line.Split(new char[] { ' ' }, StringSplitOptions.RemoveEmptyEntries);
 
-                var len = parts.Length;
+                int len = parts.Length;
                 if (len > 2)
                     result.Add(new PRC
                     {

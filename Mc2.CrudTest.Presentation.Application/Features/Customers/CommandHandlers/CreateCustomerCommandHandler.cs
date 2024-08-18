@@ -31,7 +31,7 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandle
 
         public async Task<Result<CreatedCustomerResponse>> Handle(CreateCustomerCommand request, CancellationToken cancellationToken)
         {
-            var validationResult = await _validator.ValidateAsync(request, cancellationToken);
+            FluentValidation.Results.ValidationResult validationResult = await _validator.ValidateAsync(request, cancellationToken);
             if (!validationResult.IsValid)
             {
                 return Result<CreatedCustomerResponse>.Invalid(validationResult.AsErrors());
@@ -41,19 +41,19 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandle
             Email email;
             BankAccountNumber bankAccountNumber;
 
-            var phoneNumberCreateResult = PhoneNumber.Create(request.PhoneNumber);
+            Result<PhoneNumber> phoneNumberCreateResult = PhoneNumber.Create(request.PhoneNumber);
             if (phoneNumberCreateResult.IsSuccess)
                 phoneNumber = phoneNumberCreateResult.Value;
             else
                 return Result<CreatedCustomerResponse>.Invalid(phoneNumberCreateResult.ValidationErrors);
 
-            var emailCreateResult = Email.Create(request.Email);
+            Result<Email> emailCreateResult = Email.Create(request.Email);
             if (emailCreateResult.IsSuccess)
                 email = emailCreateResult.Value;
             else
                 return Result<CreatedCustomerResponse>.Invalid(emailCreateResult.ValidationErrors);
 
-            var bankAccountNumberCreateResult = BankAccountNumber.Create(request.BankAccountNumber);
+            Result<BankAccountNumber> bankAccountNumberCreateResult = BankAccountNumber.Create(request.BankAccountNumber);
             if (bankAccountNumberCreateResult.IsSuccess)
                 bankAccountNumber = bankAccountNumberCreateResult.Value;
             else
@@ -66,7 +66,7 @@ namespace Mc2.CrudTest.Presentation.Application.Features.Customers.CommandHandle
             if (await _repository.ExistsAsync(request.FirstName, request.LastName, request.DateOfBirth))
                 return Result<CreatedCustomerResponse>.Error("customer already registered");
 
-            var customer = CustomerFactory.Create(
+            Customer customer = CustomerFactory.Create(
                 request.FirstName,
                 request.LastName,
                 request.DateOfBirth,

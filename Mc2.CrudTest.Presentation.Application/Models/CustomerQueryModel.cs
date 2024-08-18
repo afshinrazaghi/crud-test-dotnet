@@ -35,5 +35,14 @@ namespace Mc2.CrudTest.Presentation.Application.Models
             BankAccountNumber = bankAccountNumber;
         }
 
+
+        public override bool Equals(object? obj)
+        {
+            CustomerQueryModel? item = obj as CustomerQueryModel;
+            if (item == null) return false;
+            return item.FirstName == FirstName && item.LastName == LastName && item.DateOfBirth == DateOfBirth &&
+                item.PhoneNumber == PhoneNumber && item.Email == Email && item.BankAccountNumber == BankAccountNumber;
+        }
+
     }
 }

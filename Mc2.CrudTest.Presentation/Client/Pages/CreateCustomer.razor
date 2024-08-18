@@ -61,8 +61,8 @@
     {
         try
         {
-            var response = await Http.PostAsJsonAsync<CreateCustomerCommand>(Program.EndPoint, FormData);
-            var result = (await response.Content.ReadAsStringAsync()).FromJson<ApiResponse<CreatedCustomerResponse>>();
+            HttpResponseMessage response = await Http.PostAsJsonAsync<CreateCustomerCommand>(Program.EndPoint, FormData);
+            ApiResponse<CreatedCustomerResponse> result = (await response.Content.ReadAsStringAsync()).FromJson<ApiResponse<CreatedCustomerResponse>>();
             if (result.Success)
             {
                 toastService.ShowSuccess(result.SuccessMessage ?? "Customer Created successfully!");

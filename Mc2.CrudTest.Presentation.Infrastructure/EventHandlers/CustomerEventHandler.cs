@@ -30,7 +30,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.EventHandlers
         {
             LogEvent(notification);
 
-            var customerQueryModel = _mapper.Map<CustomerQueryModel>(notification);
+            CustomerQueryModel customerQueryModel = _mapper.Map<CustomerQueryModel>(notification);
             await _synchronizeDb.UpsertAsync(customerQueryModel, filter => filter.Id == customerQueryModel.Id);
         }
 
@@ -38,7 +38,7 @@ namespace Mc2.CrudTest.Presentation.Infrastructure.EventHandlers
         {
             LogEvent(notification);
 
-            var customerQueryModel = _mapper.Map<CustomerQueryModel>(notification);
+            CustomerQueryModel customerQueryModel = _mapper.Map<CustomerQueryModel>(notification);
             await _synchronizeDb.UpsertAsync(customerQueryModel, filter => filter.Id == customerQueryModel.Id);
         }
 

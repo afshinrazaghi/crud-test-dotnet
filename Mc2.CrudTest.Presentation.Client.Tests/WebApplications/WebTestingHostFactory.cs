@@ -18,11 +18,11 @@ namespace Mc2.CrudTest.Presentation.Client.Tests.WebApplications
         {
             // Create the host that is actually used by the
             // TestServer (In Memory).
-            var testHost = base.CreateHost(builder);
+            IHost testHost = base.CreateHost(builder);
             // configure and start the actual host using Kestrel.
             builder.ConfigureWebHost(
               webHostBuilder => webHostBuilder.UseKestrel());
-            var host = builder.Build();
+            IHost host = builder.Build();
             host.Start();
             // In order to cleanup and properly dispose HTTP server
             // resources we return a composite host object that is
